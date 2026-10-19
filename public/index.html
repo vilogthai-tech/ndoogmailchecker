@@ -354,13 +354,14 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-// -- SISTEM PING STATUS (ONLINE/OFFLINE) --
+// -- SISTEM PING STATUS (ANTI-CACHE) --
 async function checkConnection() {
   const box = document.getElementById("connectionStatus");
   const text = document.getElementById("connectionText");
   
   try {
-    const res = await fetch('/api/ping');
+    // Tambahkan opsi cache: "no-store" agar browser tidak menyimpan cache
+    const res = await fetch('/api/ping', { cache: "no-store" });
     const data = await res.json();
     
     if (data.status === "ONLINE") {
