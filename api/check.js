@@ -1,26 +1,22 @@
 const axios = require("axios");
 
-// Menggunakan endpoint Android Mobile API yang jauh lebih stabil
-async function checkGoogle(email) {
+// Menggunakan endpoint otentikasi web murni yang tidak butuh JS
+async function checkGoogleWeb(email) {
   try {
     const response = await axios.post(
-      "https://android.clients.google.com/auth",
+      "https://accounts.google.com/_/signin/v2/identifier?hl=id",
       new URLSearchParams({
-        Email: email,
-        EncryptedPasswd: "dummy_password_to_check",
-        service: "ac2dm",
-        app: "com.google.android.gms",
-        client_sig: "38918a453d0719931ef8d5d482c74f8b0a5e08f5",
-        callerPkg: "com.google.android.gms",
-        device_country: "id",
-        operatorCountry: "id",
-        lang: "id",
-        sdk_version: "28"
+        identifier: email,
+        flowName: "GlifWebSignIn",
+        continue: "https://accounts.google.com/",
+        fdm: "1"
       }).toString(),
       {
         headers: {
-          "User-Agent": "GoogleAuth/1.4 (walleye PQ2A.190305.002)",
-          "Content-Type": "application/x-www-form-urlencoded"
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8"
         },
         timeout: 10000,
         validateStatus: () => true
@@ -29,19 +25,40 @@ async function checkGoogle(email) {
 
     const text = String(response.data);
 
-    // Jika Google merespons dengan Error=BadAuthentication, berarti format email valid & terdaftar
-    if (text.includes("Error=BadAuthentication")) {
-      return "password"; 
+    // 1. Deteksi Unregistered (Tidak Terdaftar)
+    if (
+      text.includes("Couldn't find your Google Account") || 
+      text.includes("Tidak dapat menemukan Akun Google")
+    ) {
+      return "unregistered";
     }
-    
-    // Jika Google meminta verifikasi tambahan / captcha
-    if (text.includes("Error=NeedsBrowser") || text.includes("Error=CaptchaRequired")) {
+
+    // 2. Deteksi Captcha (Paling Atas karena seringkali halaman captcha juga menyertakan form password di HTML)
+    if (
+      text.includes("recaptcha/api2/payload") || 
+      text.includes("g-recaptcha") || 
+      text.includes("rc-imageselect") ||
+      text.includes("sistem mendeteksi lalu lintas") // teks bot detection
+    ) {
       return "captcha";
     }
 
-    // Jika email tidak terdaftar
-    if (text.includes("Error=Unknown") || text.includes("Error=NotRegistered")) {
-      return "unregistered";
+    // 3. Deteksi Halaman Password
+    if (
+      text.includes('type="password"') || 
+      text.includes('name="Passwd"') || 
+      text.includes("Masukkan sandi")
+    ) {
+      return "password";
+    }
+
+    // 4. Deteksi Captcha Ketik / Verifikasi Aneh
+    if (
+      text.includes("verify it's you") || 
+      text.includes("Verifikasi bahwa ini Anda") ||
+      text.includes("captcha")
+    ) {
+      return "unknown";
     }
 
     return "unknown";
@@ -63,6 +80,6 @@ module.exports = async (req, res) => {
     return res.status(400).json({ result: "eror", msg: "format salah" });
   }
 
-  const result = await checkGoogle(email);
+  const result = await checkGoogleWeb(email);
   return res.json({ result, email });
 };
