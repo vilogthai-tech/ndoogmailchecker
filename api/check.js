@@ -2,7 +2,55 @@ const axios = require("axios");
 
 async function checkGoogle(email) {
   try {
+    // 1. Dapatkan cookie dari halaman awal Google
+    const getRes = await axios.get("https://accounts.google.com/signin/v2/identifier?hl=id", {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+      }
+    });
+    const cookies = getRes.headers['set-cookie'] ? getRes.headers['set-cookie'].map(c => c.split(';')[0]).join('; ') : "";
+
+    // 2. Tembak halaman web dengan cookie tersebut (untuk deteksi halaman visual)
     const response = await axios.post(
+      "https://accounts.google.com/_/signin/v2/identifier?hl=id",
+      new URLSearchParams({
+        identifier: email,
+        flowName: "GlifWebSignIn",
+        continue: "https://accounts.google.com/",
+        fdm: "1"
+      }).toString(),
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": cookies
+        },
+        timeout: 10000,
+        validateStatus: () => true
+      }
+    );
+
+    const text = String(response.data);
+
+    // Cek Unregistered
+    if (text.includes("Couldn't find your Google Account") || text.includes("Tidak dapat menemukan Akun Google")) {
+      return "unregistered";
+    }
+    // Cek Captcha Gambar (Visual)
+    if (text.includes("recaptcha/api2/payload") || text.includes("g-recaptcha") || text.includes("rc-imageselect")) {
+      return "captcha";
+    }
+    // Cek Password
+    if (text.includes('type="password"') || text.includes('name="Passwd"')) {
+      return "password";
+    }
+    // Cek Captcha Ketik
+    if (text.includes("captcha") || text.includes("verify it's you")) {
+      return "unknown"; 
+    }
+
+    // JIKA WEB GAGAL MENDETEKSI (misal karena IP diblokir), BARU pakai Android API
+    const androidRes = await axios.post(
       "https://android.clients.google.com/auth",
       new URLSearchParams({
         Email: email,
@@ -25,32 +73,11 @@ async function checkGoogle(email) {
         validateStatus: () => true
       }
     );
-
-    const text = String(response.data);
-
-    // 1. Deteksi Akun Terdaftar (tapi password salah)
-    if (text.includes("Error=BadAuthentication")) {
-      // Cek apakah Google memaksa verifikasi / captcha
-      if (text.includes("CaptchaRequired") || text.includes("NeedsBrowser")) {
-        return "captcha";
-      }
-      return "password"; 
-    }
     
-    // 2. Deteksi Akun Tidak Terdaftar
-    if (text.includes("Error=Unknown") || text.includes("Error=NotRegistered")) {
-      return "unregistered";
-    }
-
-    // 3. Jika Error=NeedsBrowser dari awal
-    if (text.includes("Error=NeedsBrowser")) {
-       return "captcha";
-    }
-
-    // 4. Jika HTTP Error (429 / 403 / 500)
-    if (response.status >= 400 || text.length < 20) {
-      return "eror";
-    }
+    const androidText = String(androidRes.data);
+    if (androidText.includes("Error=BadAuthentication")) return "password";
+    if (androidText.includes("Error=Unknown") || androidText.includes("Error=NotRegistered")) return "unregistered";
+    if (androidText.includes("CaptchaRequired") || androidText.includes("NeedsBrowser")) return "captcha";
 
     return "unknown";
   } catch (err) {
