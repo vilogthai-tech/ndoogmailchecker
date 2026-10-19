@@ -93,6 +93,7 @@ h1{
   font-weight:800;
   letter-spacing:.55px;
   white-space:nowrap;
+  transition:all .3s ease;
 }
 
 .card{
@@ -777,6 +778,14 @@ footer,
 
 .job-id-copy{cursor:pointer; transition:opacity .15s ease, transform .15s ease;}
 .job-id-copy:active{opacity:.72; transform:scale(.98);}
+
+/* FIX UNTUK IKON PRODUK */
+.ndoo-products{margin:20px 0 17px;text-align:center;}
+.ndoo-products-label{margin-bottom:9px;color:var(--muted2);font-size:8px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;}
+.ndoo-products-row{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;}
+.ndoo-product-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 12px;border:1px solid rgba(88,170,255,.17);border-radius:999px;background:rgba(88,170,255,.045);color:#8fc9ff;font-size:9px;font-weight:750;letter-spacing:.1px;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .15s ease,border-color .15s ease,background .15s ease;}
+.ndoo-product-link svg{width:15px;height:15px;flex:0 0 15px;}
+.ndoo-product-link:active{transform:scale(.97);border-color:rgba(88,170,255,.32);background:rgba(88,170,255,.09);}
 </style>
 </head>
 
@@ -1168,8 +1177,6 @@ function setStartProcessing(active){
   }
 }
 
-let connectionState = "CONNECTING";
-
 async function checkConnection() {
   const box = document.getElementById("connectionStatus");
   const text = document.getElementById("connectionText");
@@ -1448,4 +1455,4 @@ if(clearBtn) {
 }
 </script>
 </body>
-</html>
+  </html>
