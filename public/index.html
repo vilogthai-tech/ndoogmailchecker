@@ -7,150 +7,804 @@
 
 <style>
 *{box-sizing:border-box}
-:root{--bg:#06111e;--card:#0c1d31;--card2:#071522;--line:#193854;--text:#edf5ff;--muted:#879bb1;--muted2:#5f758d;--green:#39df91;--red:#ff657f;--yellow:#ffbd4b;--purple:#a785ff;--blue:#58aaff}
-body{margin:0;background:radial-gradient(circle at 80% 0%,rgba(31,111,235,.13),transparent 26%),linear-gradient(180deg,#071525,#04101b 70%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(100%,720px);margin:auto;padding:13px 10px 30px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-.brand{display:flex;align-items:center;gap:11px}
-.logo{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#35a8ff,#197af4);box-shadow:0 8px 26px rgba(25,122,244,.28);color:#ffffff}
-.logo svg{width:22px;height:22px;display:block}
-h1{margin:0;font-size:20px;line-height:1.1;letter-spacing:-.5px}
-.sub{color:var(--muted);font-size:10px;margin-top:4px}
-.live{padding:7px 10px;border-radius:99px;border:1px solid rgba(57,223,145,.22);background:rgba(57,223,145,.08);color:#77f2b4;font-size:9px;font-weight:800;letter-spacing:.55px;white-space:nowrap;transition:all .3s ease;}
-.card{background:linear-gradient(145deg,rgba(14,34,57,.97),rgba(7,20,35,.97));border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:11px;box-shadow:0 12px 32px rgba(0,0,0,.17)}
-.section-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.65px;margin-bottom:10px}
-.worker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.worker{background:var(--card2);border:1px solid rgba(255,255,255,.035);padding:11px;border-radius:14px;min-height:84px}
-.worker-name{font-size:9px;color:var(--muted);font-weight:800}
-.worker-status{margin-top:5px;font-size:18px;font-weight:900}
+
+:root{
+  --bg:#06111e;
+  --card:#0c1d31;
+  --card2:#071522;
+  --line:#193854;
+  --text:#edf5ff;
+  --muted:#879bb1;
+  --muted2:#5f758d;
+
+  --green:#39df91;
+  --red:#ff657f;
+  --yellow:#ffbd4b;
+  --purple:#a785ff;
+  --blue:#58aaff;
+}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 80% 0%,rgba(31,111,235,.13),transparent 26%),
+    linear-gradient(180deg,#071525,#04101b 70%);
+  color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+main{
+  width:min(100%,720px);
+  margin:auto;
+  padding:13px 10px 30px;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.logo{
+  width:39px;
+  height:39px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#35a8ff,#197af4);
+  box-shadow:0 8px 26px rgba(25,122,244,.28);
+  color:#ffffff;
+}
+
+.logo svg{
+  width:22px;
+  height:22px;
+  display:block;
+}
+
+h1{
+  margin:0;
+  font-size:20px;
+  line-height:1.1;
+  letter-spacing:-.5px;
+}
+
+.sub{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:4px;
+}
+
+.live{
+  padding:7px 10px;
+  border-radius:99px;
+  border:1px solid rgba(57,223,145,.22);
+  background:rgba(57,223,145,.08);
+  color:#77f2b4;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.55px;
+  white-space:nowrap;
+}
+
+.card{
+  background:
+    linear-gradient(145deg,rgba(14,34,57,.97),rgba(7,20,35,.97));
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:13px;
+  margin-bottom:11px;
+  box-shadow:0 12px 32px rgba(0,0,0,.17);
+}
+
+.section-title{
+  font-size:10px;
+  font-weight:800;
+  color:var(--muted);
+  letter-spacing:.65px;
+  margin-bottom:10px;
+}
+
+.worker-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.worker{
+  background:var(--card2);
+  border:1px solid rgba(255,255,255,.035);
+  padding:11px;
+  border-radius:14px;
+  min-height:84px;
+}
+
+.worker-name{
+  font-size:9px;
+  color:var(--muted);
+  font-weight:800;
+}
+
+.worker-status{
+  margin-top:5px;
+  font-size:18px;
+  font-weight:900;
+}
+
 .worker-status.idle{color:var(--green)}
 .worker-status.busy{color:var(--yellow)}
-.worker-email{margin-top:6px;font-size:9px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.worker-progress{margin-top:8px}
-.worker-progress-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:8px;color:var(--muted)}
-.worker-mini-track{height:5px;margin-top:4px;border-radius:99px;background:#04101b;overflow:hidden}
-.worker-mini-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#39a9ff,#39df91);transition:width .2s ease}
-.worker-hybrid{background:var(--card2);border:1px solid rgba(255,255,255,.035);padding:12px;border-radius:14px;transition:all .2s ease}
-.worker-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;cursor:pointer;user-select:none}
-.worker-header-right{display:flex;align-items:center}
-.worker-toggle{font-size:13px;color:var(--muted);transition:transform .2s ease;padding:4px 8px}
-.worker-toggle.expanded{transform:rotate(180deg)}
-.worker-sub-info{font-size:10px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05)}
-.worker-sub-info span{color:var(--green);font-weight:800}
-.worker-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);animation:subGridFade .2s ease}
-@keyframes subGridFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.sub-card{background:#061522;border:1px solid rgba(255,255,255,.05);padding:8px;border-radius:9px;min-height:60px}
-.sub-name{font-size:8px;color:var(--muted);font-weight:800;letter-spacing:.3px}
-.sub-status{font-size:11px;font-weight:900;margin-top:3px;color:var(--green)}
-.sub-status.busy{color:var(--yellow)}
-.sub-progress{font-size:9px;color:var(--muted2);margin-top:2px}
-.job-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.metric{background:var(--card2);padding:10px 11px;border-radius:13px}
-.metric-label{font-size:8px;color:var(--muted);letter-spacing:.5px}
-.metric-value{margin-top:3px;font-size:18px;font-weight:900}
-.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:10px}
-.progress{height:8px;margin-top:6px;border-radius:99px;background:#06121e;overflow:hidden}
-#bar{height:100%;width:0;background:linear-gradient(90deg,#319cf8,#38dba2);transition:width .2s ease}
-.email-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.email-title strong{font-size:14px}
-.badge{border:1px solid rgba(88,170,255,.2);background:rgba(88,170,255,.08);color:#94c8ff;padding:6px 9px;border-radius:99px;font-size:9px;font-weight:800}
-.email-tools{display:flex;align-items:center;gap:6px}
-.clear-btn{min-height:auto;padding:6px 9px;border-radius:99px;border:1px solid rgba(255,101,127,.22);background:rgba(255,101,127,.08);color:#ff8ca0;font-size:9px;font-weight:800}
-.help{color:var(--muted);font-size:10px;margin:3px 0 9px}
-textarea{width:100%;min-height:150px;resize:vertical;border:1px solid #23425f;border-radius:14px;background:#061522;color:#fff;padding:13px;outline:none;font-size:13px;line-height:1.45}
-textarea:focus{border-color:#318de4;box-shadow:0 0 0 3px rgba(49,141,228,.08)}
-.actions{display:flex;gap:9px;margin-top:10px}
-button{min-height:44px;border:0;border-radius:13px;padding:0 17px;font-weight:800;cursor:pointer}
-#startBtn{flex:1;background:linear-gradient(135deg,#39a9ff,#1b7eef);color:white}
-#stopBtn{background:#bd2842;color:white;display:none}
-.result-heading{margin:14px 2px 8px}
-.result-heading h2{margin:0;font-size:16px}
-.result-heading p{margin:3px 0 0;font-size:9px;color:var(--muted)}
-.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
-.sum{min-height:89px;padding:12px 13px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0d2239,#071725)}
-.sum-label{font-size:9px;font-weight:800;color:var(--muted);letter-spacing:.55px}
-.sum-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.sum-icon{width:28px;height:28px;flex:0 0 28px;border-radius:9px;display:grid;place-items:center;border:1px solid currentColor;background:rgba(255,255,255,.035);opacity:.95}
-.sum-icon svg{width:14px;height:14px}
-.sum-num{font-size:29px;font-weight:900;margin-top:7px}
-.sum-note{font-size:9px;color:var(--muted2);margin-top:4px}
+
+.worker-email{
+  margin-top:6px;
+  font-size:9px;
+  color:var(--muted2);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.worker-progress{
+  margin-top:8px;
+}
+
+.worker-progress-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  font-size:8px;
+  color:var(--muted);
+}
+
+.worker-mini-track{
+  height:5px;
+  margin-top:4px;
+  border-radius:99px;
+  background:#04101b;
+  overflow:hidden;
+}
+
+.worker-mini-fill{
+  height:100%;
+  width:0%;
+  border-radius:99px;
+  background:linear-gradient(90deg,#39a9ff,#39df91);
+  transition:width .2s ease;
+}
+
+.worker-hybrid{
+  background:var(--card2);
+  border:1px solid rgba(255,255,255,.035);
+  padding:12px;
+  border-radius:14px;
+  transition:all .2s ease;
+}
+
+.worker-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:8px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.worker-header-right{
+  display:flex;
+  align-items:center;
+}
+
+.worker-toggle{
+  font-size:13px;
+  color:var(--muted);
+  transition:transform .2s ease;
+  padding:4px 8px;
+}
+
+.worker-toggle.expanded{
+  transform:rotate(180deg);
+}
+
+.worker-sub-info{
+  font-size:10px;
+  color:var(--muted);
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+
+.worker-sub-info span{
+  color:var(--green);
+  font-weight:800;
+}
+
+.worker-sub-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.05);
+  animation:subGridFade .2s ease;
+}
+
+@keyframes subGridFade{
+  from{opacity:0; transform:translateY(-4px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+.sub-card{
+  background:#061522;
+  border:1px solid rgba(255,255,255,.05);
+  padding:8px;
+  border-radius:9px;
+  min-height:60px;
+}
+
+.sub-name{
+  font-size:8px;
+  color:var(--muted);
+  font-weight:800;
+  letter-spacing:.3px;
+}
+
+.sub-status{
+  font-size:11px;
+  font-weight:900;
+  margin-top:3px;
+  color:var(--green);
+}
+
+.sub-status.busy{
+  color:var(--yellow);
+}
+
+.sub-progress{
+  font-size:9px;
+  color:var(--muted2);
+  margin-top:2px;
+}
+
+.job-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:8px;
+}
+
+.metric{
+  background:var(--card2);
+  padding:10px 11px;
+  border-radius:13px;
+}
+
+.metric-label{
+  font-size:8px;
+  color:var(--muted);
+  letter-spacing:.5px;
+}
+
+.metric-value{
+  margin-top:3px;
+  font-size:18px;
+  font-weight:900;
+}
+
+.progress-info{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:10px;
+}
+
+.progress{
+  height:8px;
+  margin-top:6px;
+  border-radius:99px;
+  background:#06121e;
+  overflow:hidden;
+}
+
+#bar{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#319cf8,#38dba2);
+  transition:width .2s ease;
+}
+
+.email-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.email-title strong{
+  font-size:14px;
+}
+
+.badge{
+  border:1px solid rgba(88,170,255,.2);
+  background:rgba(88,170,255,.08);
+  color:#94c8ff;
+  padding:6px 9px;
+  border-radius:99px;
+  font-size:9px;
+  font-weight:800;
+}
+
+.email-tools{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.clear-btn{
+  min-height:auto;
+  padding:6px 9px;
+  border-radius:99px;
+  border:1px solid rgba(255,101,127,.22);
+  background:rgba(255,101,127,.08);
+  color:#ff8ca0;
+  font-size:9px;
+  font-weight:800;
+}
+
+.help{
+  color:var(--muted);
+  font-size:10px;
+  margin:3px 0 9px;
+}
+
+textarea{
+  width:100%;
+  min-height:150px;
+  resize:vertical;
+  border:1px solid #23425f;
+  border-radius:14px;
+  background:#061522;
+  color:#fff;
+  padding:13px;
+  outline:none;
+  font-size:13px;
+  line-height:1.45;
+}
+
+textarea:focus{
+  border-color:#318de4;
+  box-shadow:0 0 0 3px rgba(49,141,228,.08);
+}
+
+.actions{
+  display:flex;
+  gap:9px;
+  margin-top:10px;
+}
+
+button{
+  min-height:44px;
+  border:0;
+  border-radius:13px;
+  padding:0 17px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+#startBtn{
+  flex:1;
+  background:linear-gradient(135deg,#39a9ff,#1b7eef);
+  color:white;
+}
+
+#stopBtn{
+  background:#bd2842;
+  color:white;
+  display:none;
+}
+
+.result-heading{
+  margin:14px 2px 8px;
+}
+
+.result-heading h2{
+  margin:0;
+  font-size:16px;
+}
+
+.result-heading p{
+  margin:3px 0 0;
+  font-size:9px;
+  color:var(--muted);
+}
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.sum{
+  min-height:89px;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(145deg,#0d2239,#071725);
+}
+
+.sum-label{
+  font-size:9px;
+  font-weight:800;
+  color:var(--muted);
+  letter-spacing:.55px;
+}
+
+.sum-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.sum-icon{
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  border:1px solid currentColor;
+  background:rgba(255,255,255,.035);
+  opacity:.95;
+}
+
+.sum-icon svg{
+  width:14px;
+  height:14px;
+}
+
+.sum-num{
+  font-size:29px;
+  font-weight:900;
+  margin-top:7px;
+}
+
+.sum-note{
+  font-size:9px;
+  color:var(--muted2);
+  margin-top:4px;
+}
+
 .green{color:var(--green)}
 .red{color:var(--red)}
 .yellow{color:var(--yellow)}
 .purple{color:var(--purple)}
-.results{display:grid;gap:8px}
-.result-card{padding:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0d2239,#071725)}
-.result-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.result-head-right{display:flex;align-items:center;gap:6px}
-.result-tools{display:flex;align-items:center;gap:3px}
-.result-tool{min-height:auto;padding:5px 6px;border:0;border-radius:7px;background:transparent;font-size:8px;font-weight:800;white-space:nowrap;cursor:pointer}
-.result-tool.copy,.result-tool.txt{color:#58aaff}
-.result-tool.xls{color:#39df91}
-.result-tool:active{transform:scale(.96);opacity:.75}
-.result-name{font-size:11px;font-weight:850}
-.result-count{min-width:29px;height:24px;padding:0 8px;border-radius:9px;display:grid;place-items:center;background:#102a43;font-size:10px;font-weight:900}
-.output{margin-top:8px;min-height:63px;max-height:170px;overflow:auto;white-space:pre-wrap;border-radius:12px;background:#061522;padding:11px;color:#dce9f6;font-family:monospace;font-size:11px;line-height:1.5}
-.empty{color:#587087;font-family:system-ui,sans-serif;font-size:10px}
-footer{text-align:center;color:#52697f;font-size:8px;margin-top:18px}
-@media(max-width:430px){.worker-grid{grid-template-columns:repeat(3,1fr)}.worker{padding:9px}.worker-status{font-size:14px}.worker-email{font-size:8px}}
-.sum-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.sum-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:0 !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important}
-.sum-icon svg{width:27px;height:27px;display:block}
-.result-tool{display:inline-flex;align-items:center;justify-content:center;gap:4px}
-.result-tool svg{width:13px;height:13px;flex:0 0 13px;display:block}
-.sum:nth-child(1) .sum-label{color:var(--green)}
-.sum:nth-child(2) .sum-label{color:var(--red)}
-.sum:nth-child(3) .sum-label{color:var(--yellow)}
-.sum:nth-child(4) .sum-label{color:var(--purple)}
-:root{--notexist-gray:#9aa6b2}
-.sum:nth-child(2) .sum-label{color:var(--notexist-gray) !important}
-.sum:nth-child(2) .sum-num{color:var(--notexist-gray) !important}
-.sum:nth-child(2) .sum-icon{color:var(--notexist-gray) !important}
-.result-name.red{color:var(--notexist-gray) !important}
-.btn-spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:7px;animation:ndooSpin .75s linear infinite}
-@keyframes ndooSpin{to{transform:rotate(360deg)}}
-#startBtn:disabled{opacity:.72;cursor:not-allowed;filter:saturate(.75)}
-body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#emails,.output{-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default;cursor:text}
-.live.online{border-color:rgba(57,223,145,.18);background:rgba(57,223,145,.055);color:#79eeb4}
-.live.online .live-dot{background:var(--green);box-shadow:0 0 8px rgba(57,223,145,.65)}
-.live.connecting{border-color:rgba(255,189,75,.22);background:rgba(255,189,75,.07);color:#ffd27f}
-.live.connecting .live-dot{background:var(--yellow);box-shadow:0 0 8px rgba(255,189,75,.55)}
-.live.offline{border-color:rgba(255,101,127,.22);background:rgba(255,101,127,.07);color:#ff8ca0}
-.live.offline .live-dot{background:var(--red);box-shadow:0 0 8px rgba(255,101,127,.55)}
-.progress-label{transition:color .18s ease}
-.progress-label.running{color:var(--blue)}
-.progress-label.queued{color:var(--yellow)}
-.progress-label.done{color:var(--green);font-weight:700}
-.progress-label.stopped{color:var(--yellow)}
-.progress-label.error{color:var(--red)}
-.result-card.zero-compact{padding:9px 12px;opacity:.72}
-.result-card.zero-compact .output{display:none}
-.result-card.zero-compact .result-tools{display:none}
-.result-card.zero-compact .result-head{min-height:22px}
-.result-card.zero-compact .result-head-right{gap:0}
-.email-valid-meta{display:flex;justify-content:flex-start;align-items:center;margin:2px 4px 2px !important;padding:0 !important}
-.valid-email-count{display:inline-flex;align-items:center;margin:0;padding:0;border:0;background:transparent;color:var(--muted2);font-size:10px;font-weight:500;line-height:1;letter-spacing:0;opacity:.82;transition:color .18s ease,opacity .18s ease}
-.valid-email-count.has-valid{color:var(--green);opacity:.88}
+
+.results{
+  display:grid;
+  gap:8px;
+}
+
+.result-card{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(145deg,#0d2239,#071725);
+}
+
+.result-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.result-head-right{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.result-tools{
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+
+.result-tool{
+  min-height:auto;
+  padding:5px 6px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  font-size:8px;
+  font-weight:800;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.result-tool.copy,
+.result-tool.txt{
+  color:#58aaff;
+}
+
+.result-tool.xls{
+  color:#39df91;
+}
+
+.result-tool:active{
+  transform:scale(.96);
+  opacity:.75;
+}
+
+.result-name{
+  font-size:11px;
+  font-weight:850;
+}
+
+.result-count{
+  min-width:29px;
+  height:24px;
+  padding:0 8px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  background:#102a43;
+  font-size:10px;
+  font-weight:900;
+}
+
+.output{
+  margin-top:8px;
+  min-height:63px;
+  max-height:170px;
+  overflow:auto;
+  white-space:pre-wrap;
+  border-radius:12px;
+  background:#061522;
+  padding:11px;
+  color:#dce9f6;
+  font-family:monospace;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.empty{
+  color:#587087;
+  font-family:system-ui,sans-serif;
+  font-size:10px;
+}
+
+footer{
+  text-align:center;
+  color:#52697f;
+  font-size:8px;
+  margin-top:18px;
+}
+
+@media(max-width:430px){
+  .worker-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .worker{
+    padding:9px;
+  }
+
+  .worker-status{
+    font-size:14px;
+  }
+
+  .worker-email{
+    font-size:8px;
+  }
+}
+
+.sum-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.sum-icon{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  display:grid;
+  place-items:center;
+
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+.sum-icon svg{
+  width:27px;
+  height:27px;
+  display:block;
+}
+
+.result-tool{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.result-tool svg{
+  width:13px;
+  height:13px;
+  flex:0 0 13px;
+  display:block;
+}
+
+.sum:nth-child(1) .sum-label{color:var(--green);}
+.sum:nth-child(2) .sum-label{color:var(--red);}
+.sum:nth-child(3) .sum-label{color:var(--yellow);}
+.sum:nth-child(4) .sum-label{color:var(--purple);}
+
+:root{
+  --notexist-gray:#9aa6b2;
+}
+
+.sum:nth-child(2) .sum-label{color:var(--notexist-gray) !important;}
+.sum:nth-child(2) .sum-num{color:var(--notexist-gray) !important;}
+.sum:nth-child(2) .sum-icon{color:var(--notexist-gray) !important;}
+.result-name.red{color:var(--notexist-gray) !important;}
+
+.btn-spinner{
+  width:15px;
+  height:15px;
+  border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;
+  border-radius:50%;
+  display:inline-block;
+  vertical-align:-2px;
+  margin-right:7px;
+  animation:ndooSpin .75s linear infinite;
+}
+
+@keyframes ndooSpin{
+  to{transform:rotate(360deg)}
+}
+
+#startBtn:disabled{
+  opacity:.72;
+  cursor:not-allowed;
+  filter:saturate(.75);
+}
+
+body,
+main,
+button,
+.card,
+.topbar,
+footer,
+.ndoo-alert-backdrop{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+
+#emails,
+.output{
+  -webkit-user-select:text !important;
+  user-select:text !important;
+  -webkit-touch-callout:default;
+  cursor:text;
+}
+
+.live.online{
+  border-color:rgba(57,223,145,.18);
+  background:rgba(57,223,145,.055);
+  color:#79eeb4;
+}
+.live.online .live-dot{
+  background:var(--green);
+  box-shadow:0 0 8px rgba(57,223,145,.65);
+}
+.live.connecting{
+  border-color:rgba(255,189,75,.22);
+  background:rgba(255,189,75,.07);
+  color:#ffd27f;
+}
+.live.connecting .live-dot{
+  background:var(--yellow);
+  box-shadow:0 0 8px rgba(255,189,75,.55);
+}
+.live.offline{
+  border-color:rgba(255,101,127,.22);
+  background:rgba(255,101,127,.07);
+  color:#ff8ca0;
+}
+.live.offline .live-dot{
+  background:var(--red);
+  box-shadow:0 0 8px rgba(255,101,127,.55);
+}
+
+.progress-label{transition:color .18s ease;}
+.progress-label.running{color:var(--blue);}
+.progress-label.queued{color:var(--yellow);}
+.progress-label.done{color:var(--green);font-weight:700;}
+.progress-label.stopped{color:var(--yellow);}
+.progress-label.error{color:var(--red);}
+
+.result-card.zero-compact{padding:9px 12px;opacity:.72;}
+.result-card.zero-compact .output{display:none;}
+.result-card.zero-compact .result-tools{display:none;}
+.result-card.zero-compact .result-head{min-height:22px;}
+.result-card.zero-compact .result-head-right{gap:0;}
+
+.email-valid-meta{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  margin:2px 4px 2px !important;
+  padding:0 !important;
+}
+
+.valid-email-count{
+  display:inline-flex;
+  align-items:center;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--muted2);
+  font-size:10px;
+  font-weight:500;
+  line-height:1;
+  letter-spacing:0;
+  opacity:.82;
+  transition:color .18s ease,opacity .18s ease;
+}
+
+.valid-email-count.has-valid{
+  color:var(--green);
+  opacity:.88;
+}
+
+.job-id-copy{cursor:pointer; transition:opacity .15s ease, transform .15s ease;}
+.job-id-copy:active{opacity:.72; transform:scale(.98);}
 </style>
 </head>
 
 <body>
 <main>
+
 <div class="topbar">
   <div class="brand">
     <div class="logo" aria-label="Checker Icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="11" cy="11" r="6.5"></circle>
-        <path d="M20 20l-3.6-3.6"></path>
-        <path d="m8.8 11 1.6 1.6 3-3.2"></path>
-      </svg>
-    </div>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       aria-hidden="true">
+    <circle cx="11" cy="11" r="6.5"></circle>
+    <path d="M20 20l-3.6-3.6"></path>
+    <path d="m8.8 11 1.6 1.6 3-3.2"></path>
+  </svg>
+</div>
+
     <div class="brand-copy">
-      <div class="title-row"><h1>NDOO GMAIL CHECKER</h1></div>
-      <div class="sub">PRIVATE · LIVE</div>
+      <div class="title-row">
+        <h1>NDOO GMAIL CHECKER</h1></div>
+
+      <div class="sub">
+        PRIVATE · LIVE
+      </div>
     </div>
   </div>
+
   <div class="live connecting" id="connectionStatus">
     <span class="live-dot" id="connectionDot"></span>
     <span id="connectionText">CONNECTING</span>
@@ -159,6 +813,7 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 
 <section class="card">
   <div class="section-title">STATUS WORKER</div>
+
   <div class="worker-hybrid" id="workerHybrid">
     <div class="worker-header" onclick="toggleSubGrid()">
       <div class="worker-header-left">
@@ -170,6 +825,7 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
         <div class="worker-toggle" id="workerToggle">▼</div>
       </div>
     </div>
+
     <div class="worker-progress">
       <div class="worker-progress-row">
         <span id="w1count">0 / 0</span>
@@ -179,9 +835,11 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
         <div class="worker-mini-fill" id="w1bar"></div>
       </div>
     </div>
+
     <div class="worker-sub-info">
       Sub aktif: <span id="subActiveCount">0 / 1</span>
     </div>
+
     <div class="worker-sub-grid" id="workerSubGrid" style="display:none;">
       <div class="sub-card">
         <div class="sub-name">SUB 1</div>
@@ -190,28 +848,43 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
       </div>
     </div>
   </div>
+
   <div class="job-grid">
     <div class="metric">
       <div class="metric-label">PROGRESS</div>
       <div class="metric-value" id="progressText">0 / 0</div>
     </div>
+
     <div class="metric">
       <div class="metric-label">JOB ID</div>
-      <div class="metric-value job-id-copy" style="font-size:12px" id="jobId" role="button" tabindex="0" title="Tap untuk salin Job ID">—</div>
+      <div class="metric-value job-id-copy"
+           style="font-size:12px"
+           id="jobId"
+           role="button"
+           tabindex="0"
+           title="Tap untuk salin Job ID">—</div>
     </div>
+
     <div class="metric">
       <div class="metric-label">POOL STATUS</div>
-      <div class="metric-value" style="font-size:15px" id="poolStatus">0 / 3 BUSY</div>
+      <div class="metric-value"
+           style="font-size:15px"
+           id="poolStatus">0 / 3 BUSY</div>
     </div>
+
     <div class="metric">
       <div class="metric-label">QUEUE</div>
-      <div class="metric-value" style="font-size:15px" id="queueCount">0</div>
+      <div class="metric-value"
+           style="font-size:15px"
+           id="queueCount">0</div>
     </div>
   </div>
+
   <div class="progress-info">
     <span class="progress-label" id="progressLabel">Siap memeriksa</span>
     <span id="progressPct">0%</span>
   </div>
+
   <div class="progress">
     <div id="bar"></div>
   </div>
@@ -220,19 +893,30 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 <section class="card">
   <div class="email-title">
     <strong>Email Checker</strong>
+
     <div class="email-tools">
-      <button type="button" class="clear-btn" id="clearEmailsBtn">CLEAR</button>
+      <button type="button" class="clear-btn" id="clearEmailsBtn">
+        CLEAR
+      </button>
+
       <div class="badge">BULK CHECK</div>
     </div>
   </div>
-  <div class="help">Masukkan banyak email, satu per baris atau dipisahkan koma.</div>
-  <textarea id="emails" placeholder="email1@gmail.com&#10;email2@gmail.com&#10;email3@gmail.com"></textarea>
-  <div class="email-valid-meta">
+
+  <div class="help">
+    Masukkan banyak email, satu per baris atau dipisahkan koma.
+  </div>
+
+  <textarea id="emails"
+    placeholder="email1@gmail.com&#10;email2@gmail.com&#10;email3@gmail.com"></textarea>
+
+<div class="email-valid-meta">
     <div class="valid-email-count" id="validEmailCount">
       <span class="valid-email-dot"></span>
       <span id="validEmailCountText">0 email valid</span>
     </div>
   </div>
+
   <div class="actions">
     <button id="startBtn">▶ Mulai Cek</button>
     <button id="stopBtn">■ Stop</button>
@@ -248,31 +932,52 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
   <div class="sum">
     <div class="sum-top">
       <div class="sum-label">PASSWORD</div>
-      <div class="sum-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.1 2.4 2.4 5.4-5.8"/></svg></div>
+      <div class="sum-icon green">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="8.5"/>
+  <path d="m8.2 12.1 2.4 2.4 5.4-5.8"/>
+</svg></div>
     </div>
     <div class="sum-num green" id="sumPASSWORD">0</div>
     <div class="sum-note">Masuk ke kolom sandi</div>
   </div>
+
   <div class="sum">
     <div class="sum-top">
       <div class="sum-label">UNREGISTERED</div>
-      <div class="sum-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4.8 18c.5-3 2.4-4.7 5.2-4.7 1.4 0 2.5.4 3.4 1"/><path d="m16.5 8.5 4 4m0-4-4 4"/></svg></div>
+      <div class="sum-icon red">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="10" cy="8" r="3.2"/>
+  <path d="M4.8 18c.5-3 2.4-4.7 5.2-4.7 1.4 0 2.5.4 3.4 1"/>
+  <path d="m16.5 8.5 4 4m0-4-4 4"/>
+</svg></div>
     </div>
     <div class="sum-num red" id="sumNOT_EXIST">0</div>
     <div class="sum-note">Akun belum terdaftar</div>
   </div>
+
   <div class="sum">
     <div class="sum-top">
       <div class="sum-label">CAPTCHA</div>
-      <div class="sum-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 18.2 6v5.3c0 4-2.5 7.1-6.2 9-3.7-1.9-6.2-5-6.2-9V6z"/><path d="M12 8v4"/><circle cx="12" cy="15.4" r=".8" fill="currentColor" stroke="none"/></svg></div>
+      <div class="sum-icon yellow">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3.5 18.2 6v5.3c0 4-2.5 7.1-6.2 9-3.7-1.9-6.2-5-6.2-9V6z"/>
+  <path d="M12 8v4"/>
+  <circle cx="12" cy="15.4" r=".8" fill="currentColor" stroke="none"/>
+</svg></div>
     </div>
     <div class="sum-num yellow" id="sumCAPTCHA">0</div>
     <div class="sum-note">Challenge / verifikasi</div>
   </div>
+
   <div class="sum">
     <div class="sum-top">
       <div class="sum-label">ERROR</div>
-      <div class="sum-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m6 18 12-12"/></svg></div>
+      <div class="sum-icon purple">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="8.5"/>
+  <path d="m6 18 12-12"/>
+</svg></div>
     </div>
     <div class="sum-num purple" id="sumERROR">0</div>
     <div class="sum-note">Tidak dapat diproses</div>
@@ -280,10 +985,11 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 </div>
 
 <div class="results">
-  <!-- PASSWORD CARD -->
+
   <div class="result-card">
     <div class="result-head">
       <div class="result-name green">PASSWORD</div>
+
       <div class="result-head-right">
         <div class="result-tools">
           <button type="button" class="result-tool copy" onclick="copyCategory('PASSWORD')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
@@ -296,10 +1002,10 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="PASSWORD"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- CAPTCHA CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name yellow">CAPTCHA</div>
+
       <div class="result-head-right">
         <div class="result-tools">
           <button type="button" class="result-tool copy" onclick="copyCategory('CAPTCHA')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
@@ -312,10 +1018,10 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="CAPTCHA"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- UNREGISTERED CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name red">UNREGISTERED</div>
+
       <div class="result-head-right">
         <div class="result-tools">
           <button type="button" class="result-tool copy" onclick="copyCategory('NOT_EXIST')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
@@ -328,10 +1034,10 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="NOT_EXIST"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- UNKNOWN CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name" style="color:#74baff">UNKNOWN</div>
+
       <div class="result-head-right">
         <div class="result-tools">
           <button type="button" class="result-tool copy" onclick="copyCategory('UNKNOWN')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
@@ -344,10 +1050,10 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="UNKNOWN"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- SYSTEM CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name purple">SYSTEM</div>
+
       <div class="result-head-right">
         <div class="result-tools">
           <button type="button" class="result-tool copy" onclick="copyCategory('SYSTEM')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
@@ -359,29 +1065,25 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     </div>
     <div class="output" id="SYSTEM"><span class="empty">Belum ada hasil</span></div>
   </div>
+
 </div>
 
 <!-- NDOO_PRODUCTS_START -->
-<section class="ndoo-products" style="margin:20px 0 17px; text-align:center;">
-  <div style="margin-bottom:9px; color:#5f758d; font-size:8px; font-weight:800; letter-spacing:.8px; text-transform:uppercase;">
-    Produk NDOO
-  </div>
-  <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px;">
-    
-    <a href="https://setorgmail.ndoo.my.id" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:34px; padding:0 12px; border:1px solid rgba(88,170,255,.17); border-radius:999px; background:rgba(88,170,255,.045); color:#8fc9ff; font-size:9px; font-weight:750; text-decoration:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px; flex:0 0 15px;">
+<section class="ndoo-products">
+  <div class="ndoo-products-label">Produk NDOO</div>
+  <div class="ndoo-products-row">
+    <a class="ndoo-product-link" href="https://setorgmail.ndoo.my.id" target="_blank" rel="noopener noreferrer" aria-label="Buka NDOO SETOR GMAIL">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>
       </svg>
       <span>NDOO SETOR GMAIL</span>
     </a>
-
-    <a href="https://otp.ndoo.my.id" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:34px; padding:0 12px; border:1px solid rgba(88,170,255,.17); border-radius:999px; background:rgba(88,170,255,.045); color:#8fc9ff; font-size:9px; font-weight:750; text-decoration:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px; flex:0 0 15px;">
+    <a class="ndoo-product-link" href="https://otp.ndoo.my.id" target="_blank" rel="noopener noreferrer" aria-label="Buka NDOO OTP">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="7" y="2.8" width="10" height="18.4" rx="2.2"/><path d="M10 6h4"/><path d="M10.4 17.4h3.2"/>
       </svg>
       <span>NDOO OTP</span>
     </a>
-
   </div>
 </section>
 <!-- NDOO_PRODUCTS_END -->
@@ -390,16 +1092,83 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
   <div>NDOO GMAIL CHECKER · PRIVATE</div>
   <div style="margin-top:4px">© 2026 NDOO GMAIL CHECKER</div>
 </footer>
+
 </main>
 
 <script>
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-const SESSION_KEY = "ndoo_checker_session_v1";
-let isProcessing = false;
+const SESSION_KEY = "ndoo_checker_session_v3";
+let activeJobId = null;
 let queueEmails = [];
 let currentIndex = 0;
+let isProcessing = false;
+
+function setWorker(id,status,email,done=0,total=0){
+  const se = document.getElementById(`w${id}status`);
+  const ee = document.getElementById(`w${id}email`);
+  const ce = document.getElementById(`w${id}count`);
+  const pe = document.getElementById(`w${id}pct`);
+  const be = document.getElementById(`w${id}bar`);
+
+  se.textContent = status;
+  se.className = "worker-status " + (status === "BUSY" ? "busy" : "idle");
+  ee.textContent = status === "BUSY" ? (email || "Processing") : "Ready";
+
+  done = Number(done || 0);
+  total = Number(total || 0);
+
+  const pct = total ? Math.min(100,Math.round(done / total * 100)) : 0;
+
+  if(ce) ce.textContent = `${done} / ${total}`;
+  if(pe) pe.textContent = `${pct}%`;
+  if(be) be.style.width = `${pct}%`;
+}
+
+function toggleSubGrid(){
+  const grid = document.getElementById("workerSubGrid");
+  const toggle = document.getElementById("workerToggle");
+  if(!grid || !toggle) return;
+  const isHidden = grid.style.display === "none";
+  grid.style.display = isHidden ? "grid" : "none";
+  toggle.classList.toggle("expanded", isHidden);
+  toggle.textContent = isHidden ? "▲" : "▼";
+}
+
+function renderSubWorkers(subWorkers){
+  if(!subWorkers) return;
+  let activeCount = 0;
+  for(let i=1; i<=1; i++){
+    const sub = subWorkers[String(i)];
+    const statusEl = document.getElementById(`sub${i}status`);
+    const progressEl = document.getElementById(`sub${i}progress`);
+    if(!sub || !statusEl || !progressEl) continue;
+    const isBusy = sub.status === "BUSY";
+    statusEl.textContent = sub.status || "IDLE";
+    statusEl.className = "sub-status" + (isBusy ? " busy" : "");
+    const done = Number(sub.done || 0);
+    const total = Number(sub.total || 0);
+    progressEl.textContent = `${done} / ${total}`;
+    if(isBusy) activeCount++;
+  }
+  const subActiveEl = document.getElementById("subActiveCount");
+  if(subActiveEl) subActiveEl.textContent = `${activeCount} / 1`;
+}
+
+function setStartProcessing(active){
+  const btn = document.getElementById("startBtn");
+  if(!btn) return;
+  if(active){
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span>Memproses...';
+  }else{
+    btn.disabled = false;
+    btn.innerHTML = '▶ Mulai Cek';
+  }
+}
+
+let connectionState = "CONNECTING";
 
 async function checkConnection() {
   const box = document.getElementById("connectionStatus");
@@ -425,22 +1194,21 @@ async function checkConnection() {
 setInterval(checkConnection, 5000);
 checkConnection();
 
-function setProgressState(text, state="idle"){
+function setProgressState(text,state="idle"){
   const el = document.getElementById("progressLabel");
   if(!el) return;
   el.textContent = text;
-  el.className = "progress-label " + state;
+  el.classList.remove("running","queued","done","stopped","error","idle");
+  if(state) el.classList.add(state);
 }
 
-function setStartProcessing(active){
-  const btn = document.getElementById("startBtn");
-  if(!btn) return;
-  if(active){
-    btn.disabled = true;
-    btn.innerHTML = '<span class="btn-spinner"></span>Memproses...';
-  }else{
-    btn.disabled = false;
-    btn.innerHTML = '▶ Mulai Cek';
+function setZeroResultCardsCompact(enabled){
+  for(const cat of categories){
+    const output = document.getElementById(cat);
+    const card = output?.closest(".result-card");
+    if(!card) continue;
+    const shouldCompact = Boolean(enabled && resultData[cat].length === 0);
+    card.classList.toggle("zero-compact", shouldCompact);
   }
 }
 
@@ -452,6 +1220,7 @@ function updateSummary(){
 }
 
 function clearResults(){
+  setZeroResultCardsCompact(true);
   setProgressState("Siap memeriksa","idle");
   for(const c of categories){
     resultData[c] = [];
@@ -465,9 +1234,111 @@ function clearResults(){
   document.getElementById("progressText").textContent = "0 / 0";
   document.getElementById("progressPct").textContent = "0%";
   document.getElementById("jobId").textContent = "—";
-  setZeroResultCardsCompact(true);
 }
 
+async function copyCategory(cat){
+  const arr = resultData[cat] || [];
+  if(!arr.length) return alert("Belum ada hasil.");
+  try { await navigator.clipboard.writeText(arr.join("\n")); } catch {}
+}
+
+function safeCategoryFilename(cat){
+  const displayName = cat === "NOT_EXIST" ? "UNREGISTERED" : String(cat || "result");
+  return displayName.toLowerCase().replace(/[^a-z0-9_-]+/g,"-");
+}
+
+function downloadTxt(cat){
+  const arr = resultData[cat] || [];
+  if(!arr.length) return alert("Belum ada hasil.");
+  const blob = new Blob([arr.join("\r\n")], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ndoo-${safeCategoryFilename(cat)}.txt`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function downloadXls(cat){
+  const arr = resultData[cat] || [];
+  if(!arr.length) return alert("Belum ada hasil.");
+  const esc = v => String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const rows = arr.map(email => `<tr><td>${esc(email)}</td></tr>`).join("");
+  const html = `<!doctype html><html><head><meta charset="utf-8"></head><body><table><tr><th>Email</th></tr>${rows}</table></body></html>`;
+  const blob = new Blob([html], {type:"application/vnd.ms-excel;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ndoo-${safeCategoryFilename(cat)}.xls`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function appendResult(email,status){
+  if(!resultData[status]) return;
+  if(!resultData[status].includes(email)) resultData[status].push(email);
+
+  const resultOutput = document.getElementById(status);
+  const resultCard = resultOutput?.closest(".result-card");
+  if(resultCard) resultCard.classList.remove("zero-compact");
+
+  document.getElementById("cnt"+status).textContent = resultData[status].length;
+  document.getElementById(status).textContent = resultData[status].join("\n");
+  updateSummary();
+}
+
+function progress(done,total){
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById("progressText").textContent = `${done} / ${total}`;
+  document.getElementById("progressPct").textContent = `${pct}%`;
+  document.getElementById("bar").style.width = `${pct}%`;
+}
+
+// --- LOCALSTORAGE SESSION ---
+function saveSession() {
+  if (!queueEmails.length) return;
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    queueEmails, currentIndex, resultData, active: isProcessing, time: Date.now()
+  }));
+}
+
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+function loadSession() {
+  const saved = localStorage.getItem(SESSION_KEY);
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    if (Date.now() - data.time > 24 * 60 * 60 * 1000) { clearSession(); return; }
+    queueEmails = data.queueEmails || [];
+    currentIndex = data.currentIndex || 0;
+    Object.assign(resultData, data.resultData || {});
+    for(const c of categories){
+      if(resultData[c].length > 0) {
+        document.getElementById("cnt"+c).textContent = resultData[c].length;
+        document.getElementById(c).textContent = resultData[c].join("\n");
+        document.getElementById(c)?.closest(".result-card")?.classList.remove("zero-compact");
+      }
+    }
+    updateSummary();
+    progress(currentIndex, queueEmails.length);
+
+    if (data.active && currentIndex < queueEmails.length) {
+      isProcessing = true;
+      setStartProcessing(true);
+      document.getElementById("stopBtn").style.display = "block";
+      setProgressState("Melanjutkan sesi...", "running");
+      processQueue();
+    } else {
+      if(queueEmails.length > 0) setProgressState("Sesi sebelumnya selesai", "done");
+      else setZeroResultCardsCompact(true);
+    }
+  } catch(e) { console.error(e); clearSession(); }
+}
+
+// --- FETCH TERMUX ---
 async function fetchTermuxAPI(email) {
   try {
     const res = await fetch(`/api/check`, {
@@ -482,113 +1353,29 @@ async function fetchTermuxAPI(email) {
   }
 }
 
-function appendResult(email,status){
-  let mappedStatus = status;
-  if(status === "UNREGISTERED") mappedStatus = "NOT_EXIST";
-  if(!resultData[mappedStatus]) mappedStatus = "SYSTEM";
-  
-  if(!resultData[mappedStatus].includes(email)){
-    resultData[mappedStatus].push(email);
-  }
-  
-  const card = document.getElementById(mappedStatus)?.closest(".result-card");
-  if(card) card.classList.remove("zero-compact");
-
-  const cntEl = document.getElementById("cnt"+mappedStatus);
-  if(cntEl) cntEl.textContent = resultData[mappedStatus].length;
-  
-  const outEl = document.getElementById(mappedStatus);
-  if(outEl) outEl.textContent = resultData[mappedStatus].join("\n");
-  
-  updateSummary();
-}
-
-function progress(done,total){
-  const pct = total ? Math.round(done/total*100) : 0;
-  document.getElementById("progressText").textContent = `${done} / ${total}`;
-  document.getElementById("progressPct").textContent = `${pct}%`;
-  document.getElementById("bar").style.width = `${pct}%`;
-}
-
-// --- SISTEM PEMULIHAN (SIMPAN DI LOKAL) ---
-function saveSession() {
-  if (!queueEmails.length) return;
-  const sessionData = {
-    queueEmails,
-    currentIndex,
-    resultData,
-    active: isProcessing,
-    time: Date.now()
-  };
-  localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
-}
-
-function clearSession() {
-  localStorage.removeItem(SESSION_KEY);
-}
-
-function loadSession() {
-  const saved = localStorage.getItem(SESSION_KEY);
-  if (!saved) return;
-  
-  try {
-    const data = JSON.parse(saved);
-    
-    // Cek apakah sesi terlalu lama (misal lebih dari 12 jam), jika iya hapus
-    if (Date.now() - data.time > 12 * 60 * 60 * 1000) {
-      clearSession();
-      return;
-    }
-
-    queueEmails = data.queueEmails || [];
-    currentIndex = data.currentIndex || 0;
-    Object.assign(resultData, data.resultData || {});
-    
-    // Render ulang semua data ke UI
-    for(const c of categories){
-      if(resultData[c].length > 0) {
-        document.getElementById("cnt"+c).textContent = resultData[c].length;
-        document.getElementById(c).textContent = resultData[c].join("\n");
-        document.getElementById(c)?.closest(".result-card")?.classList.remove("zero-compact");
-      }
-    }
-    updateSummary();
-    progress(currentIndex, queueEmails.length);
-
-    if (data.active) {
-      // Lanjutkan proses jika sebelumnya sedang berjalan
-      isProcessing = true;
-      setStartProcessing(true);
-      document.getElementById("stopBtn").style.display = "block";
-      setProgressState("Melanjutkan sesi...", "running");
-      processQueue();
-    }
-  } catch(e) { console.error(e); clearSession(); }
-}
-
-// --- LOOPING PROSES ---
+// --- QUEUE LOOP ---
 async function processQueue() {
   if (currentIndex >= queueEmails.length) {
     isProcessing = false;
     setStartProcessing(false);
     document.getElementById("stopBtn").style.display = "none";
     setProgressState(`Pemeriksaan selesai · ${queueEmails.length} email`, "done");
-    clearSession();
+    setWorker(1, "IDLE", null, queueEmails.length, queueEmails.length);
+    saveSession(); // Tetap simpan walau sudah selesai
     return;
   }
 
   const email = queueEmails[currentIndex];
-  document.getElementById("w1email").textContent = email;
+  setWorker(1, "BUSY", email, currentIndex, queueEmails.length);
   
   const result = await fetchTermuxAPI(email);
   appendResult(email, result);
   
   currentIndex++;
   progress(currentIndex, queueEmails.length);
-  saveSession(); // Simpan tiap langkah
+  saveSession(); 
   
-  // Lanjut ke email berikutnya (beri jeda sedikit)
-  setTimeout(processQueue, 500); 
+  setTimeout(processQueue, 500);
 }
 
 async function startJob(){
@@ -596,7 +1383,6 @@ async function startJob(){
   if(!emails.length) return alert("Masukkan minimal 1 email valid.");
   
   clearResults();
-  clearSession();
   
   queueEmails = emails;
   currentIndex = 0;
@@ -631,24 +1417,13 @@ function updateValidEmailCount(){
   badge.classList.toggle("has-valid", count > 0);
 }
 
-function setZeroResultCardsCompact(enabled) {
-  for (const cat of categories) {
-    const output = document.getElementById(cat);
-    const card = output?.closest(".result-card");
-    if (!card) continue;
-    const shouldCompact = Boolean(enabled && resultData[cat].length === 0);
-    card.classList.toggle("zero-compact", shouldCompact);
-  }
-}
+// --- INIT ---
+setZeroResultCardsCompact(true);
+updateValidEmailCount();
+loadSession();
 
-// Event Listeners
 const btnStart = document.getElementById("startBtn");
-if(btnStart) {
-  btnStart.addEventListener("click", (e) => {
-    e.preventDefault();
-    startJob();
-  });
-}
+if(btnStart) btnStart.addEventListener("click", (e) => { e.preventDefault(); startJob(); });
 
 const btnStop = document.getElementById("stopBtn");
 if(btnStop) {
@@ -662,9 +1437,7 @@ if(btnStop) {
 }
 
 const emailInput = document.getElementById("emails");
-if(emailInput) {
-  emailInput.addEventListener("input", updateValidEmailCount);
-}
+if(emailInput) emailInput.addEventListener("input", updateValidEmailCount);
 
 const clearBtn = document.getElementById("clearEmailsBtn");
 if(clearBtn) {
@@ -673,11 +1446,6 @@ if(clearBtn) {
     updateValidEmailCount();
   };
 }
-
-// Init
-setZeroResultCardsCompact(true);
-updateValidEmailCount();
-loadSession(); // Cek jika ada sesi yang belum selesai
 </script>
 </body>
-  </html>
+</html>
