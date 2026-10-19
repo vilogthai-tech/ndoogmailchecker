@@ -1108,11 +1108,9 @@ footer,
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-const SESSION_KEY = "ndoo_checker_session_v3";
-let activeJobId = null;
+let isProcessing = false;
 let queueEmails = [];
 let currentIndex = 0;
-let isProcessing = false;
 
 function setWorker(id,status,email,done=0,total=0){
   const se = document.getElementById(`w${id}status`);
@@ -1301,50 +1299,6 @@ function progress(done,total){
   document.getElementById("bar").style.width = `${pct}%`;
 }
 
-// --- LOCALSTORAGE SESSION ---
-function saveSession() {
-  if (!queueEmails.length) return;
-  localStorage.setItem(SESSION_KEY, JSON.stringify({
-    queueEmails, currentIndex, resultData, active: isProcessing, time: Date.now()
-  }));
-}
-
-function clearSession() {
-  localStorage.removeItem(SESSION_KEY);
-}
-
-function loadSession() {
-  const saved = localStorage.getItem(SESSION_KEY);
-  if (!saved) return;
-  try {
-    const data = JSON.parse(saved);
-    if (Date.now() - data.time > 24 * 60 * 60 * 1000) { clearSession(); return; }
-    queueEmails = data.queueEmails || [];
-    currentIndex = data.currentIndex || 0;
-    Object.assign(resultData, data.resultData || {});
-    for(const c of categories){
-      if(resultData[c].length > 0) {
-        document.getElementById("cnt"+c).textContent = resultData[c].length;
-        document.getElementById(c).textContent = resultData[c].join("\n");
-        document.getElementById(c)?.closest(".result-card")?.classList.remove("zero-compact");
-      }
-    }
-    updateSummary();
-    progress(currentIndex, queueEmails.length);
-
-    if (data.active && currentIndex < queueEmails.length) {
-      isProcessing = true;
-      setStartProcessing(true);
-      document.getElementById("stopBtn").style.display = "block";
-      setProgressState("Melanjutkan sesi...", "running");
-      processQueue();
-    } else {
-      if(queueEmails.length > 0) setProgressState("Sesi sebelumnya selesai", "done");
-      else setZeroResultCardsCompact(true);
-    }
-  } catch(e) { console.error(e); clearSession(); }
-}
-
 // --- FETCH TERMUX ---
 async function fetchTermuxAPI(email) {
   try {
@@ -1360,7 +1314,7 @@ async function fetchTermuxAPI(email) {
   }
 }
 
-// --- QUEUE LOOP ---
+// --- QUEUE LOOP (Tanpa LocalStorage) ---
 async function processQueue() {
   if (currentIndex >= queueEmails.length) {
     isProcessing = false;
@@ -1368,7 +1322,6 @@ async function processQueue() {
     document.getElementById("stopBtn").style.display = "none";
     setProgressState(`Pemeriksaan selesai · ${queueEmails.length} email`, "done");
     setWorker(1, "IDLE", null, queueEmails.length, queueEmails.length);
-    saveSession(); // Tetap simpan walau sudah selesai
     return;
   }
 
@@ -1380,7 +1333,6 @@ async function processQueue() {
   
   currentIndex++;
   progress(currentIndex, queueEmails.length);
-  saveSession(); 
   
   setTimeout(processQueue, 500);
 }
@@ -1400,7 +1352,6 @@ async function startJob(){
   setProgressState("Memproses...", "running");
   progress(0, queueEmails.length);
   
-  saveSession();
   processQueue();
 }
 
@@ -1427,7 +1378,6 @@ function updateValidEmailCount(){
 // --- INIT ---
 setZeroResultCardsCompact(true);
 updateValidEmailCount();
-loadSession();
 
 const btnStart = document.getElementById("startBtn");
 if(btnStart) btnStart.addEventListener("click", (e) => { e.preventDefault(); startJob(); });
@@ -1437,7 +1387,6 @@ if(btnStop) {
   btnStop.onclick = () => {
     if(confirm("Hentikan proses?")) {
       isProcessing = false;
-      clearSession();
       location.reload();
     }
   };
@@ -1455,4 +1404,4 @@ if(clearBtn) {
 }
 </script>
 </body>
-  </html>
+                                                                                                                                                                                                                         </html>
