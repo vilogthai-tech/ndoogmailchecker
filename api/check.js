@@ -1,87 +1,50 @@
 const axios = require("axios");
-const { HttpsProxyAgent } = require("https-proxy-agent");
-
-// List proxy publik (HTTP/HTTPS) - Diambil dari API publik gratis
-const PROXY_LIST_URL = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt";
-
-async function getProxyAgent() {
-  try {
-    const res = await axios.get(PROXY_LIST_URL, { timeout: 5000 });
-    const proxies = res.data.split("\n").filter(p => p.trim() !== "");
-    if (proxies.length === 0) return null;
-    // Ambil 1 proxy acak
-    const randomProxy = proxies[Math.floor(Math.random() * proxies.length)];
-    return new HttpsProxyAgent(`http://${randomProxy}`);
-  } catch (e) {
-    return null; // Jika gagal ambil proxy, lanjut tanpa proxy
-  }
-}
 
 async function checkGoogle(email) {
   try {
-    // Ambil proxy acak
-    const agent = await getProxyAgent();
-    
-    const axiosConfig = {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8"
-      },
-      timeout: 15000,
-      validateStatus: () => true
-    };
-    
-    if (agent) axiosConfig.httpsAgent = agent;
-
+    // API ini sangat stabil dan tidak memblokir IP Vercel
     const response = await axios.post(
-      "https://accounts.google.com/_/signin/v2/identifier?hl=id",
+      "https://android.clients.google.com/auth",
       new URLSearchParams({
-        identifier: email,
-        flowName: "GlifWebSignIn",
-        continue: "https://accounts.google.com/",
-        fdm: "1"
+        Email: email,
+        EncryptedPasswd: "dummy_password_to_check",
+        service: "ac2dm",
+        app: "com.google.android.gms",
+        client_sig: "38918a453d0719931ef8d5d482c74f8b0a5e08f5",
+        callerPkg: "com.google.android.gms",
+        device_country: "id",
+        operatorCountry: "id",
+        lang: "id",
+        sdk_version: "28"
       }).toString(),
-      axiosConfig
+      {
+        headers: {
+          "User-Agent": "GoogleAuth/1.4 (walleye PQ2A.190305.002)",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        timeout: 10000,
+        validateStatus: () => true
+      }
     );
 
     const text = String(response.data);
-    const httpStatus = response.status;
 
-    // 1. Deteksi Unregistered (Tidak Terdaftar)
-    if (
-      text.includes("Couldn't find your Google Account") || 
-      text.includes("Tidak dapat menemukan Akun Google")
-    ) {
+    // 1. Deteksi Unregistered (Akun benar-benar tidak ada)
+    if (text.includes("Error=Unknown") || text.includes("Error=NotRegistered")) {
       return "unregistered";
     }
 
-    // 2. Deteksi Captcha
-    if (
-      text.includes("recaptcha/api2/payload") || 
-      text.includes("g-recaptcha") || 
-      text.includes("rc-imageselect")
-    ) {
-      return "captcha";
+    // 2. Deteksi Akun Terdaftar (Password salah / Butuh verifikasi)
+    if (text.includes("Error=BadAuthentication")) {
+      // Jika ada parameter captcha / web browser yang diminta
+      if (text.includes("CaptchaRequired") || text.includes("NeedsBrowser")) {
+        return "captcha";
+      }
+      return "password"; 
     }
 
-    // 3. Deteksi Halaman Password
-    if (
-      text.includes('type="password"') || 
-      text.includes('name="Passwd"') || 
-      text.includes("Masukkan sandi")
-    ) {
-      return "password";
-    }
-
-    // 4. Captcha Ketik
-    if (text.includes("captcha") || text.includes("verify it's you")) {
-      return "unknown";
-    }
-
-    // 5. Blokir IP (Fake Response)
-    if (httpStatus >= 400 || text.length < 100) {
+    // 3. Error Jaringan
+    if (response.status >= 400) {
       return "eror";
     }
 
