@@ -112,15 +112,12 @@ footer{text-align:center;color:#52697f;font-size:8px;margin-top:18px}
 #startBtn:disabled{opacity:.72;cursor:not-allowed;filter:saturate(.75)}
 body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #emails,.output{-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default;cursor:text}
-
-/* State Online / Offline */
 .live.online{border-color:rgba(57,223,145,.18);background:rgba(57,223,145,.055);color:#79eeb4}
 .live.online .live-dot{background:var(--green);box-shadow:0 0 8px rgba(57,223,145,.65)}
 .live.connecting{border-color:rgba(255,189,75,.22);background:rgba(255,189,75,.07);color:#ffd27f}
 .live.connecting .live-dot{background:var(--yellow);box-shadow:0 0 8px rgba(255,189,75,.55)}
 .live.offline{border-color:rgba(255,101,127,.22);background:rgba(255,101,127,.07);color:#ff8ca0}
 .live.offline .live-dot{background:var(--red);box-shadow:0 0 8px rgba(255,101,127,.55)}
-
 .progress-label{transition:color .18s ease}
 .progress-label.running{color:var(--blue)}
 .progress-label.queued{color:var(--yellow)}
@@ -331,7 +328,7 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="NOT_EXIST"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- UNKNOWN CARD (Tambahan) -->
+  <!-- UNKNOWN CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name" style="color:#74baff">UNKNOWN</div>
@@ -399,7 +396,6 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-// -- SISTEM PING STATUS (ANTI-CACHE) --
 async function checkConnection() {
   const box = document.getElementById("connectionStatus");
   const text = document.getElementById("connectionText");
@@ -464,6 +460,7 @@ function clearResults(){
   document.getElementById("progressText").textContent = "0 / 0";
   document.getElementById("progressPct").textContent = "0%";
   document.getElementById("jobId").textContent = "—";
+  setZeroResultCardsCompact(true);
 }
 
 async function fetchTermuxAPI(email) {
@@ -488,6 +485,10 @@ function appendResult(email,status){
   if(!resultData[mappedStatus].includes(email)){
     resultData[mappedStatus].push(email);
   }
+  
+  const card = document.getElementById(mappedStatus)?.closest(".result-card");
+  if(card) card.classList.remove("zero-compact");
+
   const cntEl = document.getElementById("cnt"+mappedStatus);
   if(cntEl) cntEl.textContent = resultData[mappedStatus].length;
   
@@ -551,19 +552,17 @@ function updateValidEmailCount(){
   badge.classList.toggle("has-valid", count > 0);
 }
 
-// --- FUNGSI MERAPATKAN KARTU KOSONG (SANGAT PENTING) ---
 function setZeroResultCardsCompact(enabled) {
   for (const cat of categories) {
     const output = document.getElementById(cat);
     const card = output?.closest(".result-card");
     if (!card) continue;
-    
     const shouldCompact = Boolean(enabled && resultData[cat].length === 0);
     card.classList.toggle("zero-compact", shouldCompact);
   }
 }
 
-// --- Event Listeners ---
+// Event Listeners
 const btnStart = document.getElementById("startBtn");
 if(btnStart) {
   btnStart.addEventListener("click", (e) => {
@@ -593,9 +592,8 @@ if(clearBtn) {
 }
 
 // Init
-updateValidEmailCount();
-// Panggil fungsi compact saat halaman pertama kali dimuat
 setZeroResultCardsCompact(true);
+updateValidEmailCount();
 </script>
 </body>
-  </html>
+</html>
