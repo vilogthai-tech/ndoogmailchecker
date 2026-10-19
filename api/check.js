@@ -1,7 +1,7 @@
 const axios = require("axios");
 
-// URL dari Cloudflared yang baru saja kamu jalankan
-const TERMUX_API_URL = "https://gossip-sleeve-bowling-antarctica.trycloudflare.com/check";
+// URL BARU KITA
+const TERMUX_API_URL = "https://api.ndoo.my.id/check"; 
 
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -17,16 +17,14 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Tembak API yang ada di Termux
+    // Tembak API yang ada di Termux (sekarang via domain)
     const response = await axios.get(`${TERMUX_API_URL}?email=${encodeURIComponent(email)}`, {
-      timeout: 60000, // Timeout lama karena Termux butuh waktu buka browser
+      timeout: 60000, 
       validateStatus: () => true
     });
 
-    // Ambil status dari balasan Termux (PASSWORD, CAPTCHA, NOT_EXIST, ERROR)
     const status = response.data.status || "eror";
 
-    // Konversi nama status agar sesuai dengan UI kita (lowercase)
     let result = "eror";
     if (status === "PASSWORD") result = "password";
     else if (status === "CAPTCHA") result = "captcha";
@@ -37,7 +35,6 @@ module.exports = async (req, res) => {
     return res.json({ result, email });
     
   } catch (err) {
-    // Jika termux mati / tunnel terputus
     return res.status(500).json({ result: "eror", email, msg: err.message });
   }
 };
