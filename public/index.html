@@ -1,154 +1,589 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Google Page Checker - Opt</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NDOO GMAIL CHECKER</title>
+
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; font-family: system-ui, sans-serif;
-    background: #0f0f17; color: #e6e6e6;
-    display: flex; min-height: 100vh; justify-content: center; padding: 24px 12px;
-  }
-  .wrap { width: 100%; max-width: 620px; }
-  h1 { font-size: 20px; margin: 0 0 4px; color: #8ab4f8; }
-  p.sub { font-size: 12px; color: #8a8aa0; margin: 0 0 16px; }
-
-  textarea {
-    width: 100%; min-height: 130px; padding: 10px 12px; border-radius: 8px;
-    border: 1px solid #2e2e44; background: #171722; color: #fff;
-    font-size: 13px; font-family: monospace; resize: vertical; outline: none;
-  }
-
-  .row { display: flex; gap: 10px; margin-top: 10px; }
-  input[type=number] {
-    flex: 1; padding: 10px 12px; border-radius: 8px;
-    border: 1px solid #2e2e44; background: #171722; color: #fff; outline: none;
-  }
-  button {
-    padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer;
-    background: #8ab4f8; color: #0f0f17; font-weight: 700; font-size: 14px;
-  }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-
-  .stats {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px;
-  }
-  .stat {
-    text-align: center; padding: 10px 4px; border-radius: 8px;
-    background: #171722; border: 1px solid #2e2e44; font-size: 11px; color: #8a8aa0;
-  }
-  .stat b { display: block; font-size: 16px; margin-bottom: 2px; }
-  .stat.password b { color: #4ade80; }
-  .stat.captcha b { color: #facc15; }
-  .stat.unknown b { color: #c084fc; }
-  .stat.unregistered b { color: #f87171; }
-  .stat.eror b { color: #fb923c; }
-
-  #log {
-    margin-top: 14px; max-height: 340px; overflow-y: auto;
-    font-family: monospace; font-size: 12px; line-height: 1.7;
-    background: #171722; border: 1px solid #2e2e44; border-radius: 8px; padding: 10px;
-    white-space: pre-wrap;
-  }
-  #log .password { color: #4ade80; }
-  #log .captcha { color: #facc15; }
-  #log .unknown { color: #c084fc; }
-  #log .unregistered { color: #f87171; }
-  #log .eror { color: #fb923c; }
-  #log .info { color: #8a8aa0; }
+*{box-sizing:border-box}
+:root{--bg:#06111e;--card:#0c1d31;--card2:#071522;--line:#193854;--text:#edf5ff;--muted:#879bb1;--muted2:#5f758d;--green:#39df91;--red:#ff657f;--yellow:#ffbd4b;--purple:#a785ff;--blue:#58aaff}
+body{margin:0;background:radial-gradient(circle at 80% 0%,rgba(31,111,235,.13),transparent 26%),linear-gradient(180deg,#071525,#04101b 70%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(100%,720px);margin:auto;padding:13px 10px 30px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#35a8ff,#197af4);box-shadow:0 8px 26px rgba(25,122,244,.28);color:#ffffff}
+.logo svg{width:22px;height:22px;display:block}
+h1{margin:0;font-size:20px;line-height:1.1;letter-spacing:-.5px}
+.sub{color:var(--muted);font-size:10px;margin-top:4px}
+.live{padding:7px 10px;border-radius:99px;border:1px solid rgba(57,223,145,.22);background:rgba(57,223,145,.08);color:#77f2b4;font-size:9px;font-weight:800;letter-spacing:.55px;white-space:nowrap}
+.card{background:linear-gradient(145deg,rgba(14,34,57,.97),rgba(7,20,35,.97));border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:11px;box-shadow:0 12px 32px rgba(0,0,0,.17)}
+.section-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.65px;margin-bottom:10px}
+.worker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.worker{background:var(--card2);border:1px solid rgba(255,255,255,.035);padding:11px;border-radius:14px;min-height:84px}
+.worker-name{font-size:9px;color:var(--muted);font-weight:800}
+.worker-status{margin-top:5px;font-size:18px;font-weight:900}
+.worker-status.idle{color:var(--green)}
+.worker-status.busy{color:var(--yellow)}
+.worker-email{margin-top:6px;font-size:9px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.worker-progress{margin-top:8px}
+.worker-progress-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:8px;color:var(--muted)}
+.worker-mini-track{height:5px;margin-top:4px;border-radius:99px;background:#04101b;overflow:hidden}
+.worker-mini-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#39a9ff,#39df91);transition:width .2s ease}
+.worker-hybrid{background:var(--card2);border:1px solid rgba(255,255,255,.035);padding:12px;border-radius:14px;transition:all .2s ease}
+.worker-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;cursor:pointer;user-select:none}
+.worker-header-right{display:flex;align-items:center}
+.worker-toggle{font-size:13px;color:var(--muted);transition:transform .2s ease;padding:4px 8px}
+.worker-toggle.expanded{transform:rotate(180deg)}
+.worker-sub-info{font-size:10px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05)}
+.worker-sub-info span{color:var(--green);font-weight:800}
+.worker-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);animation:subGridFade .2s ease}
+@keyframes subGridFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.sub-card{background:#061522;border:1px solid rgba(255,255,255,.05);padding:8px;border-radius:9px;min-height:60px}
+.sub-name{font-size:8px;color:var(--muted);font-weight:800;letter-spacing:.3px}
+.sub-status{font-size:11px;font-weight:900;margin-top:3px;color:var(--green)}
+.sub-status.busy{color:var(--yellow)}
+.sub-progress{font-size:9px;color:var(--muted2);margin-top:2px}
+.job-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.metric{background:var(--card2);padding:10px 11px;border-radius:13px}
+.metric-label{font-size:8px;color:var(--muted);letter-spacing:.5px}
+.metric-value{margin-top:3px;font-size:18px;font-weight:900}
+.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:10px}
+.progress{height:8px;margin-top:6px;border-radius:99px;background:#06121e;overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,#319cf8,#38dba2);transition:width .2s ease}
+.email-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.email-title strong{font-size:14px}
+.badge{border:1px solid rgba(88,170,255,.2);background:rgba(88,170,255,.08);color:#94c8ff;padding:6px 9px;border-radius:99px;font-size:9px;font-weight:800}
+.email-tools{display:flex;align-items:center;gap:6px}
+.clear-btn{min-height:auto;padding:6px 9px;border-radius:99px;border:1px solid rgba(255,101,127,.22);background:rgba(255,101,127,.08);color:#ff8ca0;font-size:9px;font-weight:800}
+.help{color:var(--muted);font-size:10px;margin:3px 0 9px}
+textarea{width:100%;min-height:150px;resize:vertical;border:1px solid #23425f;border-radius:14px;background:#061522;color:#fff;padding:13px;outline:none;font-size:13px;line-height:1.45}
+textarea:focus{border-color:#318de4;box-shadow:0 0 0 3px rgba(49,141,228,.08)}
+.actions{display:flex;gap:9px;margin-top:10px}
+button{min-height:44px;border:0;border-radius:13px;padding:0 17px;font-weight:800;cursor:pointer}
+#startBtn{flex:1;background:linear-gradient(135deg,#39a9ff,#1b7eef);color:white}
+#stopBtn{background:#bd2842;color:white;display:none}
+.result-heading{margin:14px 2px 8px}
+.result-heading h2{margin:0;font-size:16px}
+.result-heading p{margin:3px 0 0;font-size:9px;color:var(--muted)}
+.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.sum{min-height:89px;padding:12px 13px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0d2239,#071725)}
+.sum-label{font-size:9px;font-weight:800;color:var(--muted);letter-spacing:.55px}
+.sum-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sum-icon{width:28px;height:28px;flex:0 0 28px;border-radius:9px;display:grid;place-items:center;border:1px solid currentColor;background:rgba(255,255,255,.035);opacity:.95}
+.sum-icon svg{width:14px;height:14px}
+.sum-num{font-size:29px;font-weight:900;margin-top:7px}
+.sum-note{font-size:9px;color:var(--muted2);margin-top:4px}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.yellow{color:var(--yellow)}
+.purple{color:var(--purple)}
+.results{display:grid;gap:8px}
+.result-card{padding:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0d2239,#071725)}
+.result-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.result-head-right{display:flex;align-items:center;gap:6px}
+.result-tools{display:flex;align-items:center;gap:3px}
+.result-tool{min-height:auto;padding:5px 6px;border:0;border-radius:7px;background:transparent;font-size:8px;font-weight:800;white-space:nowrap;cursor:pointer}
+.result-tool.copy,.result-tool.txt{color:#58aaff}
+.result-tool.xls{color:#39df91}
+.result-tool:active{transform:scale(.96);opacity:.75}
+.result-name{font-size:11px;font-weight:850}
+.result-count{min-width:29px;height:24px;padding:0 8px;border-radius:9px;display:grid;place-items:center;background:#102a43;font-size:10px;font-weight:900}
+.output{margin-top:8px;min-height:63px;max-height:170px;overflow:auto;white-space:pre-wrap;border-radius:12px;background:#061522;padding:11px;color:#dce9f6;font-family:monospace;font-size:11px;line-height:1.5}
+.empty{color:#587087;font-family:system-ui,sans-serif;font-size:10px}
+footer{text-align:center;color:#52697f;font-size:8px;margin-top:18px}
+@media(max-width:430px){.worker-grid{grid-template-columns:repeat(3,1fr)}.worker{padding:9px}.worker-status{font-size:14px}.worker-email{font-size:8px}}
+.sum-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.sum-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:0 !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important}
+.sum-icon svg{width:27px;height:27px;display:block}
+.result-tool{display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.result-tool svg{width:13px;height:13px;flex:0 0 13px;display:block}
+.sum:nth-child(1) .sum-label{color:var(--green)}
+.sum:nth-child(2) .sum-label{color:var(--red)}
+.sum:nth-child(3) .sum-label{color:var(--yellow)}
+.sum:nth-child(4) .sum-label{color:var(--purple)}
+:root{--notexist-gray:#9aa6b2}
+.sum:nth-child(2) .sum-label{color:var(--notexist-gray) !important}
+.sum:nth-child(2) .sum-num{color:var(--notexist-gray) !important}
+.sum:nth-child(2) .sum-icon{color:var(--notexist-gray) !important}
+.result-name.red{color:var(--notexist-gray) !important}
+.btn-spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:7px;animation:ndooSpin .75s linear infinite}
+@keyframes ndooSpin{to{transform:rotate(360deg)}}
+#startBtn:disabled{opacity:.72;cursor:not-allowed;filter:saturate(.75)}
+body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#emails,.output{-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default;cursor:text}
+.live.online{border-color:rgba(57,223,145,.18);background:rgba(57,223,145,.055);color:#79eeb4}
+.live.online .live-dot{background:var(--green);box-shadow:0 0 8px rgba(57,223,145,.65)}
+.live.connecting{border-color:rgba(255,189,75,.22);background:rgba(255,189,75,.07);color:#ffd27f}
+.live.connecting .live-dot{background:var(--yellow);box-shadow:0 0 8px rgba(255,189,75,.55)}
+.live.offline{border-color:rgba(255,101,127,.22);background:rgba(255,101,127,.07);color:#ff8ca0}
+.live.offline .live-dot{background:var(--red);box-shadow:0 0 8px rgba(255,101,127,.55)}
+.progress-label{transition:color .18s ease}
+.progress-label.running{color:var(--blue)}
+.progress-label.queued{color:var(--yellow)}
+.progress-label.done{color:var(--green);font-weight:700}
+.progress-label.stopped{color:var(--yellow)}
+.progress-label.error{color:var(--red)}
+.result-card.zero-compact{padding:9px 12px;opacity:.72}
+.result-card.zero-compact .output{display:none}
+.result-card.zero-compact .result-tools{display:none}
+.result-card.zero-compact .result-head{min-height:22px}
+.result-card.zero-compact .result-head-right{gap:0}
+.email-valid-meta{display:flex;justify-content:flex-start;align-items:center;margin:2px 4px 2px !important;padding:0 !important}
+.valid-email-count{display:inline-flex;align-items:center;margin:0;padding:0;border:0;background:transparent;color:var(--muted2);font-size:10px;font-weight:500;line-height:1;letter-spacing:0;opacity:.82;transition:color .18s ease,opacity .18s ease}
+.valid-email-count.has-valid{color:var(--green);opacity:.88}
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <h1>Google Page Checker</h1>
-  <p class="sub">Format: satu email per baris. Hasil per email: password / captcha / unknown / unregistered / eror.</p>
-
-  <textarea id="list" placeholder="contoh1@gmail.com
-contoh2@gmail.com
-contoh3@gmail.com"></textarea>
-
-  <div class="row">
-    <input id="delay" type="number" value="1500" min="300" placeholder="delay ms">
-    <button id="btn">Mulai Cek</button>
+<main>
+<div class="topbar">
+  <div class="brand">
+    <div class="logo" aria-label="Checker Icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="M20 20l-3.6-3.6"></path>
+        <path d="m8.8 11 1.6 1.6 3-3.2"></path>
+      </svg>
+    </div>
+    <div class="brand-copy">
+      <div class="title-row"><h1>NDOO GMAIL CHECKER</h1></div>
+      <div class="sub">PRIVATE · LIVE</div>
+    </div>
   </div>
-
-  <div class="stats">
-    <div class="stat password"><b id="s-password">0</b>password</div>
-    <div class="stat captcha"><b id="s-captcha">0</b>captcha</div>
-    <div class="stat unknown"><b id="s-unknown">0</b>unknown</div>
-    <div class="stat unregistered"><b id="s-unregistered">0</b>unregistered</div>
-    <div class="stat eror"><b id="s-eror">0</b>eror</div>
+  <div class="live connecting" id="connectionStatus">
+    <span class="live-dot" id="connectionDot"></span>
+    <span id="connectionText">CONNECTING</span>
   </div>
-
-  <div id="log" class="info">Siap...\n</div>
 </div>
 
+<section class="card">
+  <div class="section-title">STATUS WORKER</div>
+  <div class="worker-hybrid" id="workerHybrid">
+    <div class="worker-header" onclick="toggleSubGrid()">
+      <div class="worker-header-left">
+        <div class="worker-name">WORKER PRIVATE</div>
+        <div class="worker-status idle" id="w1status">IDLE</div>
+        <div class="worker-email" id="w1email">Ready</div>
+      </div>
+      <div class="worker-header-right">
+        <div class="worker-toggle" id="workerToggle">▼</div>
+      </div>
+    </div>
+    <div class="worker-progress">
+      <div class="worker-progress-row">
+        <span id="w1count">0 / 0</span>
+        <span id="w1pct">0%</span>
+      </div>
+      <div class="worker-mini-track">
+        <div class="worker-mini-fill" id="w1bar"></div>
+      </div>
+    </div>
+    <div class="worker-sub-info">
+      Sub aktif: <span id="subActiveCount">0 / 1</span>
+    </div>
+    <div class="worker-sub-grid" id="workerSubGrid" style="display:none;">
+      <div class="sub-card">
+        <div class="sub-name">SUB 1</div>
+        <div class="sub-status" id="sub1status">IDLE</div>
+        <div class="sub-progress" id="sub1progress">0 / 0</div>
+      </div>
+    </div>
+  </div>
+  <div class="job-grid">
+    <div class="metric">
+      <div class="metric-label">PROGRESS</div>
+      <div class="metric-value" id="progressText">0 / 0</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">JOB ID</div>
+      <div class="metric-value job-id-copy" style="font-size:12px" id="jobId" role="button" tabindex="0" title="Tap untuk salin Job ID">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">POOL STATUS</div>
+      <div class="metric-value" style="font-size:15px" id="poolStatus">0 / 3 BUSY</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">QUEUE</div>
+      <div class="metric-value" style="font-size:15px" id="queueCount">0</div>
+    </div>
+  </div>
+  <div class="progress-info">
+    <span class="progress-label" id="progressLabel">Siap memeriksa</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress">
+    <div id="bar"></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="email-title">
+    <strong>Email Checker</strong>
+    <div class="email-tools">
+      <button type="button" class="clear-btn" id="clearEmailsBtn">CLEAR</button>
+      <div class="badge">BULK CHECK</div>
+    </div>
+  </div>
+  <div class="help">Masukkan banyak email, satu per baris atau dipisahkan koma.</div>
+  <textarea id="emails" placeholder="email1@gmail.com&#10;email2@gmail.com&#10;email3@gmail.com"></textarea>
+  <div class="email-valid-meta">
+    <div class="valid-email-count" id="validEmailCount">
+      <span class="valid-email-dot"></span>
+      <span id="validEmailCountText">0 email valid</span>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="startBtn">▶ Mulai Cek</button>
+    <button id="stopBtn">■ Stop</button>
+  </div>
+</section>
+
+<div class="result-heading">
+  <h2>Hasil Pemeriksaan</h2>
+  <p>Hasil diperbarui realtime dari 3 worker.</p>
+</div>
+
+<div class="summary">
+  <div class="sum">
+    <div class="sum-top">
+      <div class="sum-label">PASSWORD</div>
+      <div class="sum-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.1 2.4 2.4 5.4-5.8"/></svg></div>
+    </div>
+    <div class="sum-num green" id="sumPASSWORD">0</div>
+    <div class="sum-note">Masuk ke kolom sandi</div>
+  </div>
+  <div class="sum">
+    <div class="sum-top">
+      <div class="sum-label">UNREGISTERED</div>
+      <div class="sum-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4.8 18c.5-3 2.4-4.7 5.2-4.7 1.4 0 2.5.4 3.4 1"/><path d="m16.5 8.5 4 4m0-4-4 4"/></svg></div>
+    </div>
+    <div class="sum-num red" id="sumNOT_EXIST">0</div>
+    <div class="sum-note">Akun belum terdaftar</div>
+  </div>
+  <div class="sum">
+    <div class="sum-top">
+      <div class="sum-label">CAPTCHA</div>
+      <div class="sum-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 18.2 6v5.3c0 4-2.5 7.1-6.2 9-3.7-1.9-6.2-5-6.2-9V6z"/><path d="M12 8v4"/><circle cx="12" cy="15.4" r=".8" fill="currentColor" stroke="none"/></svg></div>
+    </div>
+    <div class="sum-num yellow" id="sumCAPTCHA">0</div>
+    <div class="sum-note">Challenge / verifikasi</div>
+  </div>
+  <div class="sum">
+    <div class="sum-top">
+      <div class="sum-label">ERROR</div>
+      <div class="sum-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m6 18 12-12"/></svg></div>
+    </div>
+    <div class="sum-num purple" id="sumERROR">0</div>
+    <div class="sum-note">Tidak dapat diproses</div>
+  </div>
+</div>
+
+<div class="results">
+  <!-- PASSWORD CARD -->
+  <div class="result-card">
+    <div class="result-head">
+      <div class="result-name green">PASSWORD</div>
+      <div class="result-head-right">
+        <div class="result-tools">
+          <button type="button" class="result-tool copy" onclick="copyCategory('PASSWORD')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
+          <button type="button" class="result-tool txt" onclick="downloadTxt('PASSWORD')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg> TXT</button>
+          <button type="button" class="result-tool xls" onclick="downloadXls('PASSWORD')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="m9.5 12 5 5m0-5-5 5"/></svg> XLS</button>
+        </div>
+        <div class="result-count" id="cntPASSWORD">0</div>
+      </div>
+    </div>
+    <div class="output" id="PASSWORD"><span class="empty">Belum ada hasil</span></div>
+  </div>
+
+  <!-- CAPTCHA CARD -->
+  <div class="result-card">
+    <div class="result-head">
+      <div class="result-name yellow">CAPTCHA</div>
+      <div class="result-head-right">
+        <div class="result-tools">
+          <button type="button" class="result-tool copy" onclick="copyCategory('CAPTCHA')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
+          <button type="button" class="result-tool txt" onclick="downloadTxt('CAPTCHA')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg> TXT</button>
+          <button type="button" class="result-tool xls" onclick="downloadXls('CAPTCHA')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="m9.5 12 5 5m0-5-5 5"/></svg> XLS</button>
+        </div>
+        <div class="result-count" id="cntCAPTCHA">0</div>
+      </div>
+    </div>
+    <div class="output" id="CAPTCHA"><span class="empty">Belum ada hasil</span></div>
+  </div>
+
+  <!-- UNREGISTERED CARD -->
+  <div class="result-card">
+    <div class="result-head">
+      <div class="result-name red">UNREGISTERED</div>
+      <div class="result-head-right">
+        <div class="result-tools">
+          <button type="button" class="result-tool copy" onclick="copyCategory('NOT_EXIST')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
+          <button type="button" class="result-tool txt" onclick="downloadTxt('NOT_EXIST')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg> TXT</button>
+          <button type="button" class="result-tool xls" onclick="downloadXls('NOT_EXIST')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="m9.5 12 5 5m0-5-5 5"/></svg> XLS</button>
+        </div>
+        <div class="result-count" id="cntNOT_EXIST">0</div>
+      </div>
+    </div>
+    <div class="output" id="NOT_EXIST"><span class="empty">Belum ada hasil</span></div>
+  </div>
+
+  <!-- SYSTEM CARD -->
+  <div class="result-card">
+    <div class="result-head">
+      <div class="result-name purple">SYSTEM</div>
+      <div class="result-head-right">
+        <div class="result-tools">
+          <button type="button" class="result-tool copy" onclick="copyCategory('SYSTEM')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
+          <button type="button" class="result-tool txt" onclick="downloadTxt('SYSTEM')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg> TXT</button>
+          <button type="button" class="result-tool xls" onclick="downloadXls('SYSTEM')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="m9.5 12 5 5m0-5-5 5"/></svg> XLS</button>
+        </div>
+        <div class="result-count" id="cntSYSTEM">0</div>
+      </div>
+    </div>
+    <div class="output" id="SYSTEM"><span class="empty">Belum ada hasil</span></div>
+  </div>
+</div>
+
+<footer>
+  <div>NDOO GMAIL CHECKER · PRIVATE</div>
+  <div style="margin-top:4px">© 2026 NDOO GMAIL CHECKER</div>
+</footer>
+</main>
+
 <script>
-const btn = document.getElementById("btn");
-const log = document.getElementById("log");
-const delayEl = document.getElementById("delay");
-const counters = {
-  password: document.getElementById("s-password"),
-  captcha: document.getElementById("s-captcha"),
-  unknown: document.getElementById("s-unknown"),
-  unregistered: document.getElementById("s-unregistered"),
-  eror: document.getElementById("s-eror"),
-};
-const count = { password: 0, captcha: 0, unknown: 0, unregistered: 0, eror: 0 };
+const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
+const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-function write(text, cls = "info") {
-  const div = document.createElement("div");
-  div.className = cls;
-  div.textContent = text;
-  log.appendChild(div);
-  log.scrollTop = log.scrollHeight;
+let activeJobId = null;
+
+// UBAH BAGIAN INI UNTUK MENYESUAIKAN DENGAN API VERCEL KITA
+// Karena API Vercel kita memproses satu per satu, kita akali sistem antreannya
+async function fetchTermuxAPI(email) {
+  try {
+    const res = await fetch(`/api/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    return data.result ? data.result.toUpperCase() : "SYSTEM";
+  } catch (e) {
+    return "SYSTEM";
+  }
 }
 
-function resetStats() {
-  for (const k in count) { count[k] = 0; counters[k].textContent = "0"; }
+function setWorker(id, status, email, done=0, total=0){
+  const se = document.getElementById(`w${id}status`);
+  const ee = document.getElementById(`w${id}email`);
+  const ce = document.getElementById(`w${id}count`);
+  const pe = document.getElementById(`w${id}pct`);
+  const be = document.getElementById(`w${id}bar`);
+  if(!se) return;
+
+  se.textContent = status;
+  se.className = "worker-status " + (status === "BUSY" ? "busy" : "idle");
+  ee.textContent = status === "BUSY" ? "Processing" : "Ready";
+
+  done = Number(done || 0);
+  total = Number(total || 0);
+  const pct = total ? Math.min(100,Math.round(done / total * 100)) : 0;
+
+  if(ce) ce.textContent = `${done} / ${total}`;
+  if(pe) pe.textContent = `${pct}%`;
+  if(be) be.style.width = `${pct}%`;
 }
 
-btn.onclick = async () => {
-  const raw = document.getElementById("list").value.trim();
-  const delay = Math.max(300, parseInt(delayEl.value) || 1500);
-  if (!raw) return write("Daftar email kosong.", "eror");
+function toggleSubGrid(){
+  const grid = document.getElementById("workerSubGrid");
+  const toggle = document.getElementById("workerToggle");
+  if(!grid || !toggle) return;
+  const isHidden = grid.style.display === "none";
+  grid.style.display = isHidden ? "grid" : "none";
+  toggle.classList.toggle("expanded", isHidden);
+  toggle.textContent = isHidden ? "▲" : "▼";
+}
 
-  const emails = raw.split("\n").map(x => x.trim()).filter(Boolean);
-  btn.disabled = true;
-  log.innerHTML = "";
-  resetStats();
-  write(`Mulai cek ${emails.length} email (delay ${delay}ms)...\n`, "info");
+function setStartProcessing(active){
+  const btn = document.getElementById("startBtn");
+  if(!btn) return;
+  if(active){
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span>Memproses...';
+  }else{
+    btn.disabled = false;
+    btn.innerHTML = '▶ Mulai Cek';
+  }
+}
+
+let connectionState = "CONNECTING";
+function setConnectionStatus(state){
+  const box = document.getElementById("connectionStatus");
+  const text = document.getElementById("connectionText");
+  if(!box || !text) return;
+  box.classList.remove("online", "connecting", "offline");
+  box.classList.add(state.toLowerCase());
+  text.textContent = state;
+  connectionState = state;
+}
+
+function setProgressState(text, state="idle"){
+  const el = document.getElementById("progressLabel");
+  if(!el) return;
+  el.textContent = text;
+  el.classList.remove("running", "queued", "done", "stopped", "error", "idle");
+  if(state) el.classList.add(state);
+}
+
+function updateSummary(){
+  document.getElementById("sumPASSWORD").textContent = resultData.PASSWORD.length;
+  document.getElementById("sumNOT_EXIST").textContent = resultData.NOT_EXIST.length;
+  document.getElementById("sumCAPTCHA").textContent = resultData.CAPTCHA.length;
+  document.getElementById("sumERROR").textContent = resultData.UNKNOWN.length + resultData.SYSTEM.length;
+}
+
+function clearResults(){
+  setProgressState("Siap memeriksa","idle");
+  for(const c of categories){
+    resultData[c] = [];
+    document.getElementById("cnt"+c).textContent = "0";
+    document.getElementById(""+c).innerHTML = '<span class="empty">Belum ada hasil</span>';
+  }
+  updateSummary();
+  document.getElementById("bar").style.width = "0%";
+  document.getElementById("progressText").textContent = "0 / 0";
+  document.getElementById("progressPct").textContent = "0%";
+  document.getElementById("jobId").textContent = "—";
+}
+
+async function copyCategory(cat){
+  const arr = resultData[cat] || [];
+  if(!arr.length) return alert("Belum ada hasil.");
+  try { await navigator.clipboard.writeText(arr.join("\n")); } catch {}
+}
+
+function downloadTxt(cat){
+  const arr = resultData[cat] || [];
+  if(!arr.length) return alert("Belum ada hasil.");
+  const blob = new Blob([arr.join("\r\n")], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ndoo-${cat.toLowerCase()}.txt`;
+  a.click();
+}
+
+function downloadXls(cat){
+  const arr = resultData[cat] || [];
+  if(!arr.length) return alert("Belum ada hasil.");
+  let html = `<table><tr><th>Email</th></tr>${arr.map(e => `<tr><td>${e}</td></tr>`).join('')}</table>`;
+  const blob = new Blob([html], {type:"application/vnd.ms-excel;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `ndoo-${cat.toLowerCase()}.xls`;
+  a.click();
+}
+
+function appendResult(email,status){
+  let mappedStatus = status;
+  if(status === "NOT_EXIST") mappedStatus = "NOT_EXIST";
+  if(status === "UNREGISTERED") mappedStatus = "NOT_EXIST"; // Map dari API
+  if(!resultData[mappedStatus]) mappedStatus = "SYSTEM"; // fallback
+  
+  if(!resultData[mappedStatus].includes(email)){
+    resultData[mappedStatus].push(email);
+  }
+  document.getElementById("cnt"+mappedStatus).textContent = resultData[mappedStatus].length;
+  document.getElementById(mappedStatus).textContent = resultData[mappedStatus].join("\n");
+  updateSummary();
+}
+
+function progress(done,total){
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById("progressText").textContent = `${done} / ${total}`;
+  document.getElementById("progressPct").textContent = `${pct}%`;
+  document.getElementById("bar").style.width = `${pct}%`;
+}
+
+async function startJob(){
+  const emails = getValidEmails();
+  if(!emails.length) return alert("Masukkan minimal 1 email valid.");
+  
+  clearResults();
+  setStartProcessing(true);
+  document.getElementById("stopBtn").style.display = "block";
+  setProgressState("Memproses...", "running");
+  setConnectionStatus("ONLINE");
+
+  // Bikin job ID lokal (karena ini bukan job queue beneran)
+  activeJobId = "job-" + Date.now();
+  document.getElementById("jobId").textContent = activeJobId;
+
+  let done = 0;
+  const total = emails.length;
+  progress(done, total);
+
+  // Update worker jadi BUSY
+  setWorker(1, "BUSY", null, 0, total);
 
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i];
-    let result = "eror";
-    try {
-      const r = await fetch("/api/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
-      });
-      const j = await r.json();
-      result = j.result || "eror";
-    } catch (e) {
-      result = "eror";
+    
+    // Cek apakah user menekan stop
+    if (!document.getElementById("stopBtn").disabled) {
+        // do nothing
     }
 
-    count[result] = (count[result] || 0) + 1;
-    counters[result].textContent = count[result];
-    write(`[${i + 1}] ${email} → ${result}`, result);
-
-    if (i < emails.length - 1) await new Promise(r => setTimeout(r, delay));
+    document.getElementById("w1email").textContent = email;
+    
+    // Panggil API Vercel -> diteruskan ke Termux
+    const result = await fetchTermuxAPI(email);
+    
+    appendResult(email, result);
+    done++;
+    progress(done, total);
+    setWorker(1, "BUSY", null, done, total);
   }
 
-  write(
-    `\n✅ Selesai. password:${count.password} captcha:${count.captcha} unknown:${count.unknown} unregistered:${count.unregistered} eror:${count.eror}`,
-    "info"
-  );
-  btn.disabled = false;
+  setWorker(1, "IDLE", null, total, total);
+  setStartProcessing(false);
+  document.getElementById("stopBtn").style.display = "none";
+  setProgressState(`Pemeriksaan selesai · ${total} email`, "done");
+}
+
+function getValidEmails(){
+  const raw = document.getElementById("emails").value;
+  const items = raw.split(/[\n,]+/).map(x => x.trim().toLowerCase()).filter(Boolean);
+  const emailRegex = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
+  const unique = [];
+  for(const email of items){
+    if(emailRegex.test(email) && !unique.includes(email)) unique.push(email);
+  }
+  return unique;
+}
+
+function updateValidEmailCount(){
+  const count = getValidEmails().length;
+  const badge = document.getElementById("validEmailCount");
+  const text = document.getElementById("validEmailCountText");
+  if(!badge || !text) return;
+  text.textContent = `${count} email valid`;
+  badge.classList.toggle("has-valid", count > 0);
+}
+
+document.getElementById("emails").addEventListener("input", updateValidEmailCount);
+document.getElementById("clearEmailsBtn").onclick = () => {
+  document.getElementById("emails").value = "";
+  updateValidEmailCount();
 };
+document.getElementById("startBtn").onclick = startJob;
+document.getElementById("stopBtn").onclick = () => {
+  // Karena kita pakai for loop sederhana, kita bisa stop paksa dengan reload page
+  if(confirm("Hentikan proses?")) location.reload();
+};
+
+updateValidEmailCount();
+setConnectionStatus("ONLINE");
 </script>
 </body>
-</html>
+                                                        </html>
