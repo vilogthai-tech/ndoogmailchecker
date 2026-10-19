@@ -344,6 +344,31 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
   </div>
 </div>
 
+<!-- NDOO_PRODUCTS_START -->
+<section class="ndoo-products" style="margin:20px 0 17px; text-align:center;">
+  <div style="margin-bottom:9px; color:#5f758d; font-size:8px; font-weight:800; letter-spacing:.8px; text-transform:uppercase;">
+    Produk NDOO
+  </div>
+  <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px;">
+    
+    <a href="https://setorgmail.ndoo.my.id" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:34px; padding:0 12px; border:1px solid rgba(88,170,255,.17); border-radius:999px; background:rgba(88,170,255,.045); color:#8fc9ff; font-size:9px; font-weight:750; text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px; flex:0 0 15px;">
+        <path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>
+      </svg>
+      <span>NDOO SETOR GMAIL</span>
+    </a>
+
+    <a href="https://otp.ndoo.my.id" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:34px; padding:0 12px; border:1px solid rgba(88,170,255,.17); border-radius:999px; background:rgba(88,170,255,.045); color:#8fc9ff; font-size:9px; font-weight:750; text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px; flex:0 0 15px;">
+        <rect x="7" y="2.8" width="10" height="18.4" rx="2.2"/><path d="M10 6h4"/><path d="M10.4 17.4h3.2"/>
+      </svg>
+      <span>NDOO OTP</span>
+    </a>
+
+  </div>
+</section>
+<!-- NDOO_PRODUCTS_END -->
+
 <footer>
   <div>NDOO GMAIL CHECKER · PRIVATE</div>
   <div style="margin-top:4px">© 2026 NDOO GMAIL CHECKER</div>
@@ -360,7 +385,6 @@ async function checkConnection() {
   const text = document.getElementById("connectionText");
   
   try {
-    // Tambahkan opsi cache: "no-store" agar browser tidak menyimpan cache
     const res = await fetch('/api/ping', { cache: "no-store" });
     const data = await res.json();
     
@@ -377,7 +401,6 @@ async function checkConnection() {
   }
 }
 
-// Jalankan cek koneksi setiap 5 detik
 setInterval(checkConnection, 5000);
 checkConnection();
 
@@ -537,7 +560,9 @@ if(clearBtn) {
   };
 }
 
+// Init
+setZeroResultCardsCompact(true);
 updateValidEmailCount();
 </script>
 </body>
-</html>
+    </html>
