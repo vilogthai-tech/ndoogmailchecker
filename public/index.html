@@ -16,7 +16,7 @@ main{width:min(100%,720px);margin:auto;padding:13px 10px 30px}
 .logo svg{width:22px;height:22px;display:block}
 h1{margin:0;font-size:20px;line-height:1.1;letter-spacing:-.5px}
 .sub{color:var(--muted);font-size:10px;margin-top:4px}
-.live{padding:7px 10px;border-radius:99px;border:1px solid rgba(57,223,145,.22);background:rgba(57,223,145,.08);color:#77f2b4;font-size:9px;font-weight:800;letter-spacing:.55px;white-space:nowrap}
+.live{padding:7px 10px;border-radius:99px;border:1px solid rgba(57,223,145,.22);background:rgba(57,223,145,.08);color:#77f2b4;font-size:9px;font-weight:800;letter-spacing:.55px;white-space:nowrap;transition:all .3s ease;}
 .card{background:linear-gradient(145deg,rgba(14,34,57,.97),rgba(7,20,35,.97));border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:11px;box-shadow:0 12px 32px rgba(0,0,0,.17)}
 .section-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.65px;margin-bottom:10px}
 .worker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -112,12 +112,15 @@ footer{text-align:center;color:#52697f;font-size:8px;margin-top:18px}
 #startBtn:disabled{opacity:.72;cursor:not-allowed;filter:saturate(.75)}
 body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #emails,.output{-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default;cursor:text}
+
+/* State Online / Offline */
 .live.online{border-color:rgba(57,223,145,.18);background:rgba(57,223,145,.055);color:#79eeb4}
 .live.online .live-dot{background:var(--green);box-shadow:0 0 8px rgba(57,223,145,.65)}
 .live.connecting{border-color:rgba(255,189,75,.22);background:rgba(255,189,75,.07);color:#ffd27f}
 .live.connecting .live-dot{background:var(--yellow);box-shadow:0 0 8px rgba(255,189,75,.55)}
 .live.offline{border-color:rgba(255,101,127,.22);background:rgba(255,101,127,.07);color:#ff8ca0}
 .live.offline .live-dot{background:var(--red);box-shadow:0 0 8px rgba(255,101,127,.55)}
+
 .progress-label{transition:color .18s ease}
 .progress-label.running{color:var(--blue)}
 .progress-label.queued{color:var(--yellow)}
@@ -280,7 +283,6 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 </div>
 
 <div class="results">
-  <!-- PASSWORD CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name green">PASSWORD</div>
@@ -296,7 +298,6 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="PASSWORD"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- CAPTCHA CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name yellow">CAPTCHA</div>
@@ -312,7 +313,6 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="CAPTCHA"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- UNREGISTERED CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name red">UNREGISTERED</div>
@@ -328,7 +328,6 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="NOT_EXIST"><span class="empty">Belum ada hasil</span></div>
   </div>
 
-  <!-- SYSTEM CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name purple">SYSTEM</div>
@@ -355,13 +354,38 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-function setConnectionStatus(state){
+// -- SISTEM PING STATUS (ONLINE/OFFLINE) --
+async function checkConnection() {
   const box = document.getElementById("connectionStatus");
   const text = document.getElementById("connectionText");
-  if(!box || !text) return;
-  box.className = "live " + state.toLowerCase();
-  text.textContent = state;
+  
+  try {
+    // Kita tembak API kita sendiri untuk cek apakah server Termux merespon
+    // Gunakan email dummy, jika sukses (walau hasilnya error format) berarti server nyala
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 detik timeout
+    
+    await fetch('/api/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'ping@test.com' }),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    // Jika berhasil sampai sini, berarti server online
+    box.className = "live online";
+    text.textContent = "ONLINE";
+  } catch (error) {
+    // Jika gagal (Termux mati / tunnel mati)
+    box.className = "live offline";
+    text.textContent = "OFFLINE";
+  }
 }
+
+// Jalankan cek koneksi setiap 5 detik
+setInterval(checkConnection, 5000);
+checkConnection();
 
 function setProgressState(text, state="idle"){
   const el = document.getElementById("progressLabel");
@@ -519,9 +543,7 @@ if(clearBtn) {
   };
 }
 
-// Init
-setConnectionStatus("ONLINE");
 updateValidEmailCount();
 </script>
 </body>
-</html>
+  </html>
