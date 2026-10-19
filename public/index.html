@@ -576,13 +576,38 @@ document.getElementById("clearEmailsBtn").onclick = () => {
   document.getElementById("emails").value = "";
   updateValidEmailCount();
 };
-document.getElementById("startBtn").onclick = startJob;
-document.getElementById("stopBtn").onclick = () => {
-  // Karena kita pakai for loop sederhana, kita bisa stop paksa dengan reload page
-  if(confirm("Hentikan proses?")) location.reload();
-};
+// Tambahkan pengecekan elemen agar tidak error
+const btnStart = document.getElementById("startBtn");
+if (btnStart) {
+  btnStart.addEventListener("click", function(e) {
+    e.preventDefault();
+    startJob();
+  });
+} else {
+  console.error("Tombol Mulai Cek tidak ditemukan!");
+}
 
-updateValidEmailCount();
+const btnStop = document.getElementById("stopBtn");
+if (btnStop) {
+  btnStop.onclick = () => {
+    if(confirm("Hentikan proses?")) location.reload();
+  };
+}
+
+const emailInput = document.getElementById("emails");
+if (emailInput) {
+  emailInput.addEventListener("input", updateValidEmailCount);
+  updateValidEmailCount();
+}
+
+const clearBtn = document.getElementById("clearEmailsBtn");
+if (clearBtn) {
+  clearBtn.onclick = () => {
+    emailInput.value = "";
+    updateValidEmailCount();
+  };
+}
+
 setConnectionStatus("ONLINE");
 </script>
 </body>
