@@ -283,6 +283,7 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 </div>
 
 <div class="results">
+  <!-- PASSWORD CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name green">PASSWORD</div>
@@ -298,6 +299,7 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="PASSWORD"><span class="empty">Belum ada hasil</span></div>
   </div>
 
+  <!-- CAPTCHA CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name yellow">CAPTCHA</div>
@@ -313,6 +315,7 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="CAPTCHA"><span class="empty">Belum ada hasil</span></div>
   </div>
 
+  <!-- UNREGISTERED CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name red">UNREGISTERED</div>
@@ -328,6 +331,23 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
     <div class="output" id="NOT_EXIST"><span class="empty">Belum ada hasil</span></div>
   </div>
 
+  <!-- UNKNOWN CARD (Tambahan) -->
+  <div class="result-card">
+    <div class="result-head">
+      <div class="result-name" style="color:#74baff">UNKNOWN</div>
+      <div class="result-head-right">
+        <div class="result-tools">
+          <button type="button" class="result-tool copy" onclick="copyCategory('UNKNOWN')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Salin</button>
+          <button type="button" class="result-tool txt" onclick="downloadTxt('UNKNOWN')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg> TXT</button>
+          <button type="button" class="result-tool xls" onclick="downloadXls('UNKNOWN')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="m9.5 12 5 5m0-5-5 5"/></svg> XLS</button>
+        </div>
+        <div class="result-count" id="cntUNKNOWN">0</div>
+      </div>
+    </div>
+    <div class="output" id="UNKNOWN"><span class="empty">Belum ada hasil</span></div>
+  </div>
+
+  <!-- SYSTEM CARD -->
   <div class="result-card">
     <div class="result-head">
       <div class="result-name purple">SYSTEM</div>
@@ -531,6 +551,18 @@ function updateValidEmailCount(){
   badge.classList.toggle("has-valid", count > 0);
 }
 
+// --- FUNGSI MERAPATKAN KARTU KOSONG (SANGAT PENTING) ---
+function setZeroResultCardsCompact(enabled) {
+  for (const cat of categories) {
+    const output = document.getElementById(cat);
+    const card = output?.closest(".result-card");
+    if (!card) continue;
+    
+    const shouldCompact = Boolean(enabled && resultData[cat].length === 0);
+    card.classList.toggle("zero-compact", shouldCompact);
+  }
+}
+
 // --- Event Listeners ---
 const btnStart = document.getElementById("startBtn");
 if(btnStart) {
@@ -561,8 +593,9 @@ if(clearBtn) {
 }
 
 // Init
-setZeroResultCardsCompact(true);
 updateValidEmailCount();
+// Panggil fungsi compact saat halaman pertama kali dimuat
+setZeroResultCardsCompact(true);
 </script>
 </body>
-    </html>
+  </html>
