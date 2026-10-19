@@ -1,37 +1,20 @@
 const axios = require("axios");
 
-// Fungsi untuk menggenerate ID acak mirip Android
-function generateAndroidId() {
-  const chars = '0123456789abcdef';
-  let id = '';
-  for (let i = 0; i < 16; i++) id += chars[Math.floor(Math.random() * chars.length)];
-  return id;
-}
-
 async function checkGoogle(email) {
   try {
-    const androidId = generateAndroidId();
-    
-    // Menggunakan API Google Authenticator dengan ID perangkat acak
+    // Gunakan endpoint "signin/v2/identifier" dengan metode GET untuk mengambil cookie dan struktur HTML
     const response = await axios.post(
-      "https://android.clients.google.com/auth",
+      "https://accounts.google.com/signin/v2/identifier?hl=id&flowName=GlifWebSignIn&flowEntry=ServiceLogin",
       new URLSearchParams({
-        Email: email,
-        EncryptedPasswd: "dummy_pass", // Sengaja salah
-        service: "ac2dm",
-        app: "com.google.android.gms",
-        client_sig: "38918a453d0719931ef8d5d482c74f8b0a5e08f5",
-        callerPkg: "com.google.android.gms",
-        device_country: "id",
-        operatorCountry: "id",
-        lang: "id",
-        sdk_version: "28",
-        androidId: androidId // ID Random agar tidak diblokir
+        identifier: email,
+        fdm: "1"
       }).toString(),
       {
         headers: {
-          "User-Agent": "GoogleAuth/1.4 (walleye PQ2A.190305.002)",
-          "Content-Type": "application/x-www-form-urlencoded"
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8"
         },
         timeout: 10000,
         validateStatus: () => true
@@ -40,23 +23,44 @@ async function checkGoogle(email) {
 
     const text = String(response.data);
 
-    // Deteksi jika email terdaftar (meski password salah)
-    if (text.includes("Error=BadAuthentication")) {
-      
-      // Jika di response ada indikasi butuh verifikasi, kita anggap captcha
-      if (text.includes("CaptchaRequired") || text.includes("NeedsBrowser") || text.includes("Token=")) {
-        return "captcha";
-      }
-      return "password"; 
-    }
-    
-    // Deteksi email tidak terdaftar
-    if (text.includes("Error=Unknown") || text.includes("Error=NotRegistered")) {
+    // 1. Cek Unregistered
+    if (
+      text.includes("Couldn't find your Google Account") || 
+      text.includes("Tidak dapat menemukan Akun Google")
+    ) {
       return "unregistered";
     }
 
-    // Error lain (rate limit, dll)
-    if (response.status >= 400 || text.length < 20) {
+    // 2. Cek Captcha Gambar (Cari jejak recaptcha di HTML)
+    if (
+      text.includes("recaptcha/api2/payload") || 
+      text.includes("g-recaptcha") || 
+      text.includes("rc-imageselect") ||
+      text.includes("recaptcha")
+    ) {
+      return "captcha";
+    }
+
+    // 3. Cek Halaman Password
+    if (
+      text.includes('type="password"') || 
+      text.includes('name="Passwd"') || 
+      text.includes("Masukkan sandi")
+    ) {
+      return "password";
+    }
+
+    // 4. Cek Captcha ketik / verifikasi tambahan
+    if (
+      text.includes("captcha") || 
+      text.includes("verify it's you") ||
+      text.includes("Verifikasi bahwa ini Anda")
+    ) {
+      return "unknown";
+    }
+
+    // 5. Jika HTTP error
+    if (response.status >= 400) {
       return "eror";
     }
 
