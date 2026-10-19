@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google Page Checker - Opt</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, sans-serif;
+    background: #0f0f17; color: #e6e6e6;
+    display: flex; min-height: 100vh; justify-content: center; padding: 24px 12px;
+  }
+  .wrap { width: 100%; max-width: 620px; }
+  h1 { font-size: 20px; margin: 0 0 4px; color: #8ab4f8; }
+  p.sub { font-size: 12px; color: #8a8aa0; margin: 0 0 16px; }
+
+  textarea {
+    width: 100%; min-height: 130px; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid #2e2e44; background: #171722; color: #fff;
+    font-size: 13px; font-family: monospace; resize: vertical; outline: none;
+  }
+
+  .row { display: flex; gap: 10px; margin-top: 10px; }
+  input[type=number] {
+    flex: 1; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid #2e2e44; background: #171722; color: #fff; outline: none;
+  }
+  button {
+    padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer;
+    background: #8ab4f8; color: #0f0f17; font-weight: 700; font-size: 14px;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px;
+  }
+  .stat {
+    text-align: center; padding: 10px 4px; border-radius: 8px;
+    background: #171722; border: 1px solid #2e2e44; font-size: 11px; color: #8a8aa0;
+  }
+  .stat b { display: block; font-size: 16px; margin-bottom: 2px; }
+  .stat.password b { color: #4ade80; }
+  .stat.captcha b { color: #facc15; }
+  .stat.unknown b { color: #c084fc; }
+  .stat.unregistered b { color: #f87171; }
+  .stat.eror b { color: #fb923c; }
+
+  #log {
+    margin-top: 14px; max-height: 340px; overflow-y: auto;
+    font-family: monospace; font-size: 12px; line-height: 1.7;
+    background: #171722; border: 1px solid #2e2e44; border-radius: 8px; padding: 10px;
+    white-space: pre-wrap;
+  }
+  #log .password { color: #4ade80; }
+  #log .captcha { color: #facc15; }
+  #log .unknown { color: #c084fc; }
+  #log .unregistered { color: #f87171; }
+  #log .eror { color: #fb923c; }
+  #log .info { color: #8a8aa0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Google Page Checker</h1>
+  <p class="sub">Format: satu email per baris. Hasil per email: password / captcha / unknown / unregistered / eror.</p>
+
+  <textarea id="list" placeholder="contoh1@gmail.com
+contoh2@gmail.com
+contoh3@gmail.com"></textarea>
+
+  <div class="row">
+    <input id="delay" type="number" value="1500" min="300" placeholder="delay ms">
+    <button id="btn">Mulai Cek</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat password"><b id="s-password">0</b>password</div>
+    <div class="stat captcha"><b id="s-captcha">0</b>captcha</div>
+    <div class="stat unknown"><b id="s-unknown">0</b>unknown</div>
+    <div class="stat unregistered"><b id="s-unregistered">0</b>unregistered</div>
+    <div class="stat eror"><b id="s-eror">0</b>eror</div>
+  </div>
+
+  <div id="log" class="info">Siap...\n</div>
+</div>
+
+<script>
+const btn = document.getElementById("btn");
+const log = document.getElementById("log");
+const delayEl = document.getElementById("delay");
+const counters = {
+  password: document.getElementById("s-password"),
+  captcha: document.getElementById("s-captcha"),
+  unknown: document.getElementById("s-unknown"),
+  unregistered: document.getElementById("s-unregistered"),
+  eror: document.getElementById("s-eror"),
+};
+const count = { password: 0, captcha: 0, unknown: 0, unregistered: 0, eror: 0 };
+
+function write(text, cls = "info") {
+  const div = document.createElement("div");
+  div.className = cls;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function resetStats() {
+  for (const k in count) { count[k] = 0; counters[k].textContent = "0"; }
+}
+
+btn.onclick = async () => {
+  const raw = document.getElementById("list").value.trim();
+  const delay = Math.max(300, parseInt(delayEl.value) || 1500);
+  if (!raw) return write("Daftar email kosong.", "eror");
+
+  const emails = raw.split("\n").map(x => x.trim()).filter(Boolean);
+  btn.disabled = true;
+  log.innerHTML = "";
+  resetStats();
+  write(`Mulai cek ${emails.length} email (delay ${delay}ms)...\n`, "info");
+
+  for (let i = 0; i < emails.length; i++) {
+    const email = emails[i];
+    let result = "eror";
+    try {
+      const r = await fetch("/api/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const j = await r.json();
+      result = j.result || "eror";
+    } catch (e) {
+      result = "eror";
+    }
+
+    count[result] = (count[result] || 0) + 1;
+    counters[result].textContent = count[result];
+    write(`[${i + 1}] ${email} → ${result}`, result);
+
+    if (i < emails.length - 1) await new Promise(r => setTimeout(r, delay));
+  }
+
+  write(
+    `\n✅ Selesai. password:${count.password} captcha:${count.captcha} unknown:${count.unknown} unregistered:${count.unregistered} eror:${count.eror}`,
+    "info"
+  );
+  btn.disabled = false;
+};
+</script>
+</body>
+</html>
