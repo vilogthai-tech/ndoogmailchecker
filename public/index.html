@@ -396,6 +396,11 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
+const SESSION_KEY = "ndoo_checker_session_v1";
+let isProcessing = false;
+let queueEmails = [];
+let currentIndex = 0;
+
 async function checkConnection() {
   const box = document.getElementById("connectionStatus");
   const text = document.getElementById("connectionText");
@@ -505,31 +510,105 @@ function progress(done,total){
   document.getElementById("bar").style.width = `${pct}%`;
 }
 
+// --- SISTEM PEMULIHAN (SIMPAN DI LOKAL) ---
+function saveSession() {
+  if (!queueEmails.length) return;
+  const sessionData = {
+    queueEmails,
+    currentIndex,
+    resultData,
+    active: isProcessing,
+    time: Date.now()
+  };
+  localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+}
+
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+function loadSession() {
+  const saved = localStorage.getItem(SESSION_KEY);
+  if (!saved) return;
+  
+  try {
+    const data = JSON.parse(saved);
+    
+    // Cek apakah sesi terlalu lama (misal lebih dari 12 jam), jika iya hapus
+    if (Date.now() - data.time > 12 * 60 * 60 * 1000) {
+      clearSession();
+      return;
+    }
+
+    queueEmails = data.queueEmails || [];
+    currentIndex = data.currentIndex || 0;
+    Object.assign(resultData, data.resultData || {});
+    
+    // Render ulang semua data ke UI
+    for(const c of categories){
+      if(resultData[c].length > 0) {
+        document.getElementById("cnt"+c).textContent = resultData[c].length;
+        document.getElementById(c).textContent = resultData[c].join("\n");
+        document.getElementById(c)?.closest(".result-card")?.classList.remove("zero-compact");
+      }
+    }
+    updateSummary();
+    progress(currentIndex, queueEmails.length);
+
+    if (data.active) {
+      // Lanjutkan proses jika sebelumnya sedang berjalan
+      isProcessing = true;
+      setStartProcessing(true);
+      document.getElementById("stopBtn").style.display = "block";
+      setProgressState("Melanjutkan sesi...", "running");
+      processQueue();
+    }
+  } catch(e) { console.error(e); clearSession(); }
+}
+
+// --- LOOPING PROSES ---
+async function processQueue() {
+  if (currentIndex >= queueEmails.length) {
+    isProcessing = false;
+    setStartProcessing(false);
+    document.getElementById("stopBtn").style.display = "none";
+    setProgressState(`Pemeriksaan selesai · ${queueEmails.length} email`, "done");
+    clearSession();
+    return;
+  }
+
+  const email = queueEmails[currentIndex];
+  document.getElementById("w1email").textContent = email;
+  
+  const result = await fetchTermuxAPI(email);
+  appendResult(email, result);
+  
+  currentIndex++;
+  progress(currentIndex, queueEmails.length);
+  saveSession(); // Simpan tiap langkah
+  
+  // Lanjut ke email berikutnya (beri jeda sedikit)
+  setTimeout(processQueue, 500); 
+}
+
 async function startJob(){
   const emails = getValidEmails();
   if(!emails.length) return alert("Masukkan minimal 1 email valid.");
   
   clearResults();
+  clearSession();
+  
+  queueEmails = emails;
+  currentIndex = 0;
+  isProcessing = true;
+  
   setStartProcessing(true);
   document.getElementById("stopBtn").style.display = "block";
   setProgressState("Memproses...", "running");
+  progress(0, queueEmails.length);
   
-  const total = emails.length;
-  progress(0, total);
-
-  for (let i = 0; i < emails.length; i++) {
-    const email = emails[i];
-    document.getElementById("w1email").textContent = email;
-    
-    const result = await fetchTermuxAPI(email);
-    appendResult(email, result);
-    
-    progress(i + 1, total);
-  }
-
-  setStartProcessing(false);
-  document.getElementById("stopBtn").style.display = "none";
-  setProgressState(`Pemeriksaan selesai · ${total} email`, "done");
+  saveSession();
+  processQueue();
 }
 
 function getValidEmails(){
@@ -574,7 +653,11 @@ if(btnStart) {
 const btnStop = document.getElementById("stopBtn");
 if(btnStop) {
   btnStop.onclick = () => {
-    if(confirm("Hentikan proses?")) location.reload();
+    if(confirm("Hentikan proses?")) {
+      isProcessing = false;
+      clearSession();
+      location.reload();
+    }
   };
 }
 
@@ -594,6 +677,7 @@ if(clearBtn) {
 // Init
 setZeroResultCardsCompact(true);
 updateValidEmailCount();
+loadSession(); // Cek jika ada sesi yang belum selesai
 </script>
 </body>
-</html>
+  </html>
