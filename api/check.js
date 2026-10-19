@@ -2,53 +2,52 @@ const axios = require("axios");
 
 async function checkGoogle(email) {
   try {
-    // API ini sangat stabil dan tidak memblokir IP Vercel
-    const response = await axios.post(
-      "https://android.clients.google.com/auth",
-      new URLSearchParams({
-        Email: email,
-        EncryptedPasswd: "dummy_password_to_check",
-        service: "ac2dm",
-        app: "com.google.android.gms",
-        client_sig: "38918a453d0719931ef8d5d482c74f8b0a5e08f5",
-        callerPkg: "com.google.android.gms",
-        device_country: "id",
-        operatorCountry: "id",
-        lang: "id",
-        sdk_version: "28"
-      }).toString(),
-      {
-        headers: {
-          "User-Agent": "GoogleAuth/1.4 (walleye PQ2A.190305.002)",
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        timeout: 10000,
-        validateStatus: () => true
-      }
-    );
+    // Endpoint login murni untuk mengecek email
+    const url = "https://accounts.google.com/_/signin/v2/lookup";
+    
+    // Parameter form data (persis seperti browser)
+    const formData = new URLSearchParams();
+    formData.append("email", email);
+    formData.append("f.req", JSON.stringify([[["TL", null, null]]]));
+
+    const response = await axios.post(url, formData.toString(), {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        "Accept": "*/*",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8",
+        "Origin": "https://accounts.google.com",
+        "Referer": "https://accounts.google.com/signin/v2/identifier?hl=id"
+      },
+      timeout: 10000,
+      validateStatus: () => true
+    });
 
     const text = String(response.data);
 
-    // 1. Deteksi Unregistered (Akun benar-benar tidak ada)
-    if (text.includes("Error=Unknown") || text.includes("Error=NotRegistered")) {
+    // Jika respons berisi "unregistered" atau "not found" (Google kadang membalas JSON)
+    if (text.includes("unregistered") || text.includes("not found") || text.includes("Unknown")) {
       return "unregistered";
     }
 
-    // 2. Deteksi Akun Terdaftar (Password salah / Butuh verifikasi)
-    if (text.includes("Error=BadAuthentication")) {
-      // Jika ada parameter captcha / web browser yang diminta
-      if (text.includes("CaptchaRequired") || text.includes("NeedsBrowser")) {
-        return "captcha";
-      }
-      return "password"; 
+    // Jika ada indikator captcha
+    if (text.includes("captcha") || text.includes("recaptcha")) {
+      return "captcha";
     }
 
-    // 3. Error Jaringan
+    // Jika respons menandakan email valid (biasanya ada indikator "password" atau "glif")
+    if (text.includes("password") || text.includes("glif") || text.includes("allowed")) {
+      return "password";
+    }
+
+    // Jika HTTP 429 (Rate Limit) atau error lainnya
     if (response.status >= 400) {
       return "eror";
     }
 
+    // Fallback
     return "unknown";
+    
   } catch (err) {
     return "eror";
   }
