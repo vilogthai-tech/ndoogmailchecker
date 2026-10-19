@@ -355,53 +355,19 @@ body,main,button,.card,.topbar,footer{-webkit-user-select:none;user-select:none;
 const categories = ["PASSWORD", "CAPTCHA", "NOT_EXIST", "UNKNOWN", "SYSTEM"];
 const resultData = Object.fromEntries(categories.map(x => [x,[]]));
 
-let activeJobId = null;
-
-// UBAH BAGIAN INI UNTUK MENYESUAIKAN DENGAN API VERCEL KITA
-// Karena API Vercel kita memproses satu per satu, kita akali sistem antreannya
-async function fetchTermuxAPI(email) {
-  try {
-    const res = await fetch(`/api/check`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-    const data = await res.json();
-    return data.result ? data.result.toUpperCase() : "SYSTEM";
-  } catch (e) {
-    return "SYSTEM";
-  }
+function setConnectionStatus(state){
+  const box = document.getElementById("connectionStatus");
+  const text = document.getElementById("connectionText");
+  if(!box || !text) return;
+  box.className = "live " + state.toLowerCase();
+  text.textContent = state;
 }
 
-function setWorker(id, status, email, done=0, total=0){
-  const se = document.getElementById(`w${id}status`);
-  const ee = document.getElementById(`w${id}email`);
-  const ce = document.getElementById(`w${id}count`);
-  const pe = document.getElementById(`w${id}pct`);
-  const be = document.getElementById(`w${id}bar`);
-  if(!se) return;
-
-  se.textContent = status;
-  se.className = "worker-status " + (status === "BUSY" ? "busy" : "idle");
-  ee.textContent = status === "BUSY" ? "Processing" : "Ready";
-
-  done = Number(done || 0);
-  total = Number(total || 0);
-  const pct = total ? Math.min(100,Math.round(done / total * 100)) : 0;
-
-  if(ce) ce.textContent = `${done} / ${total}`;
-  if(pe) pe.textContent = `${pct}%`;
-  if(be) be.style.width = `${pct}%`;
-}
-
-function toggleSubGrid(){
-  const grid = document.getElementById("workerSubGrid");
-  const toggle = document.getElementById("workerToggle");
-  if(!grid || !toggle) return;
-  const isHidden = grid.style.display === "none";
-  grid.style.display = isHidden ? "grid" : "none";
-  toggle.classList.toggle("expanded", isHidden);
-  toggle.textContent = isHidden ? "▲" : "▼";
+function setProgressState(text, state="idle"){
+  const el = document.getElementById("progressLabel");
+  if(!el) return;
+  el.textContent = text;
+  el.className = "progress-label " + state;
 }
 
 function setStartProcessing(active){
@@ -416,25 +382,6 @@ function setStartProcessing(active){
   }
 }
 
-let connectionState = "CONNECTING";
-function setConnectionStatus(state){
-  const box = document.getElementById("connectionStatus");
-  const text = document.getElementById("connectionText");
-  if(!box || !text) return;
-  box.classList.remove("online", "connecting", "offline");
-  box.classList.add(state.toLowerCase());
-  text.textContent = state;
-  connectionState = state;
-}
-
-function setProgressState(text, state="idle"){
-  const el = document.getElementById("progressLabel");
-  if(!el) return;
-  el.textContent = text;
-  el.classList.remove("running", "queued", "done", "stopped", "error", "idle");
-  if(state) el.classList.add(state);
-}
-
 function updateSummary(){
   document.getElementById("sumPASSWORD").textContent = resultData.PASSWORD.length;
   document.getElementById("sumNOT_EXIST").textContent = resultData.NOT_EXIST.length;
@@ -446,8 +393,10 @@ function clearResults(){
   setProgressState("Siap memeriksa","idle");
   for(const c of categories){
     resultData[c] = [];
-    document.getElementById("cnt"+c).textContent = "0";
-    document.getElementById(""+c).innerHTML = '<span class="empty">Belum ada hasil</span>';
+    const cntEl = document.getElementById("cnt"+c);
+    if(cntEl) cntEl.textContent = "0";
+    const outEl = document.getElementById(c);
+    if(outEl) outEl.innerHTML = '<span class="empty">Belum ada hasil</span>';
   }
   updateSummary();
   document.getElementById("bar").style.width = "0%";
@@ -456,45 +405,34 @@ function clearResults(){
   document.getElementById("jobId").textContent = "—";
 }
 
-async function copyCategory(cat){
-  const arr = resultData[cat] || [];
-  if(!arr.length) return alert("Belum ada hasil.");
-  try { await navigator.clipboard.writeText(arr.join("\n")); } catch {}
-}
-
-function downloadTxt(cat){
-  const arr = resultData[cat] || [];
-  if(!arr.length) return alert("Belum ada hasil.");
-  const blob = new Blob([arr.join("\r\n")], {type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `ndoo-${cat.toLowerCase()}.txt`;
-  a.click();
-}
-
-function downloadXls(cat){
-  const arr = resultData[cat] || [];
-  if(!arr.length) return alert("Belum ada hasil.");
-  let html = `<table><tr><th>Email</th></tr>${arr.map(e => `<tr><td>${e}</td></tr>`).join('')}</table>`;
-  const blob = new Blob([html], {type:"application/vnd.ms-excel;charset=utf-8"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `ndoo-${cat.toLowerCase()}.xls`;
-  a.click();
+async function fetchTermuxAPI(email) {
+  try {
+    const res = await fetch(`/api/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    return data.result ? data.result.toUpperCase() : "SYSTEM";
+  } catch (e) {
+    return "SYSTEM";
+  }
 }
 
 function appendResult(email,status){
   let mappedStatus = status;
-  if(status === "NOT_EXIST") mappedStatus = "NOT_EXIST";
-  if(status === "UNREGISTERED") mappedStatus = "NOT_EXIST"; // Map dari API
-  if(!resultData[mappedStatus]) mappedStatus = "SYSTEM"; // fallback
+  if(status === "UNREGISTERED") mappedStatus = "NOT_EXIST";
+  if(!resultData[mappedStatus]) mappedStatus = "SYSTEM";
   
   if(!resultData[mappedStatus].includes(email)){
     resultData[mappedStatus].push(email);
   }
-  document.getElementById("cnt"+mappedStatus).textContent = resultData[mappedStatus].length;
-  document.getElementById(mappedStatus).textContent = resultData[mappedStatus].join("\n");
+  const cntEl = document.getElementById("cnt"+mappedStatus);
+  if(cntEl) cntEl.textContent = resultData[mappedStatus].length;
+  
+  const outEl = document.getElementById(mappedStatus);
+  if(outEl) outEl.textContent = resultData[mappedStatus].join("\n");
+  
   updateSummary();
 }
 
@@ -513,39 +451,20 @@ async function startJob(){
   setStartProcessing(true);
   document.getElementById("stopBtn").style.display = "block";
   setProgressState("Memproses...", "running");
-  setConnectionStatus("ONLINE");
-
-  // Bikin job ID lokal (karena ini bukan job queue beneran)
-  activeJobId = "job-" + Date.now();
-  document.getElementById("jobId").textContent = activeJobId;
-
-  let done = 0;
+  
   const total = emails.length;
-  progress(done, total);
-
-  // Update worker jadi BUSY
-  setWorker(1, "BUSY", null, 0, total);
+  progress(0, total);
 
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i];
-    
-    // Cek apakah user menekan stop
-    if (!document.getElementById("stopBtn").disabled) {
-        // do nothing
-    }
-
     document.getElementById("w1email").textContent = email;
     
-    // Panggil API Vercel -> diteruskan ke Termux
     const result = await fetchTermuxAPI(email);
-    
     appendResult(email, result);
-    done++;
-    progress(done, total);
-    setWorker(1, "BUSY", null, done, total);
+    
+    progress(i + 1, total);
   }
 
-  setWorker(1, "IDLE", null, total, total);
   setStartProcessing(false);
   document.getElementById("stopBtn").style.display = "none";
   setProgressState(`Pemeriksaan selesai · ${total} email`, "done");
@@ -571,44 +490,38 @@ function updateValidEmailCount(){
   badge.classList.toggle("has-valid", count > 0);
 }
 
-document.getElementById("emails").addEventListener("input", updateValidEmailCount);
-document.getElementById("clearEmailsBtn").onclick = () => {
-  document.getElementById("emails").value = "";
-  updateValidEmailCount();
-};
-// Tambahkan pengecekan elemen agar tidak error
+// --- Event Listeners ---
 const btnStart = document.getElementById("startBtn");
-if (btnStart) {
-  btnStart.addEventListener("click", function(e) {
+if(btnStart) {
+  btnStart.addEventListener("click", (e) => {
     e.preventDefault();
     startJob();
   });
-} else {
-  console.error("Tombol Mulai Cek tidak ditemukan!");
 }
 
 const btnStop = document.getElementById("stopBtn");
-if (btnStop) {
+if(btnStop) {
   btnStop.onclick = () => {
     if(confirm("Hentikan proses?")) location.reload();
   };
 }
 
 const emailInput = document.getElementById("emails");
-if (emailInput) {
+if(emailInput) {
   emailInput.addEventListener("input", updateValidEmailCount);
-  updateValidEmailCount();
 }
 
 const clearBtn = document.getElementById("clearEmailsBtn");
-if (clearBtn) {
+if(clearBtn) {
   clearBtn.onclick = () => {
-    emailInput.value = "";
+    if(emailInput) emailInput.value = "";
     updateValidEmailCount();
   };
 }
 
+// Init
 setConnectionStatus("ONLINE");
+updateValidEmailCount();
 </script>
 </body>
-                                                        </html>
+</html>
