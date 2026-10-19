@@ -360,24 +360,17 @@ async function checkConnection() {
   const text = document.getElementById("connectionText");
   
   try {
-    // Kita tembak API kita sendiri untuk cek apakah server Termux merespon
-    // Gunakan email dummy, jika sukses (walau hasilnya error format) berarti server nyala
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 detik timeout
+    const res = await fetch('/api/ping');
+    const data = await res.json();
     
-    await fetch('/api/check', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'ping@test.com' }),
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-
-    // Jika berhasil sampai sini, berarti server online
-    box.className = "live online";
-    text.textContent = "ONLINE";
+    if (data.status === "ONLINE") {
+      box.className = "live online";
+      text.textContent = "ONLINE";
+    } else {
+      box.className = "live offline";
+      text.textContent = "OFFLINE";
+    }
   } catch (error) {
-    // Jika gagal (Termux mati / tunnel mati)
     box.className = "live offline";
     text.textContent = "OFFLINE";
   }
@@ -546,4 +539,4 @@ if(clearBtn) {
 updateValidEmailCount();
 </script>
 </body>
-  </html>
+</html>
